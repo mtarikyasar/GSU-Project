@@ -3,6 +3,7 @@
 
 int main(int argc,char * argv[]){
   int cevap;
+
   while(cevap!=0){
     printf("Emlak Programina Hosgeldiniz!\n");
     printf("Yapmak istediginiz islemi seciniz\n");
@@ -19,6 +20,7 @@ int main(int argc,char * argv[]){
       printf("Ev listesi \n");
       // TODO
       // Butun evleri listele
+      print_house
      }
     else if (cevap==2){
       printf("ID degeri verilen ev \n");
