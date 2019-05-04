@@ -22,14 +22,14 @@ typedef struct house{
   int yearbuilt;
   int overallqual;
   int overallcond;
-  int kitchenqual;
+  char* kitchenqual;
 } House;
 
 
-void read_house_data(char* filename, House houses[]);
+void read_house_data(char* filename, House houses[], int houseCount);
 void print_house(House house);
-House get_house_byid(int id);
-House* get_neighborhoods(House house);
+House get_house_byid(int id, House *houses, int houseCount);
+House* get_neighborhoods(House *house, int houseCount, int id);
 float* mean_sale_prices(House* houses,char* criter_name);
 void sort_houses(House* houses,char* criter_name);
 
