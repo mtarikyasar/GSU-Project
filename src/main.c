@@ -3,6 +3,8 @@
 
 int main(int argc,char * argv[]){
   int cevap;
+  
+  //TODO: Read database, read_house_data();
 
   while(cevap!=0){
     printf("Emlak Programina Hosgeldiniz!\n");
@@ -16,6 +18,57 @@ int main(int argc,char * argv[]){
     printf("7 - Fiyat tahmini yap\n");
     printf("Programdan cikmak icin 0 a basiniz.\n");
     scanf("%d",&cevap);
+    
+    switch (cevap) {
+      case 1: {
+        print_house();
+        break;
+      }
+      case 2: {
+        get_house_byid();
+        break;
+      }
+      case 3: {
+        get_neighborhoods();
+        break;
+      }
+      case 4: {
+        mean_sale_prices();
+        break;
+      }
+      case 5: {
+        sort_houses();
+        //TODO: Top 10 house
+        break;
+      }
+      case 6: {
+        sort_houses();
+        //TODO: Create file, save the list
+        //Tarik'a NOT: switch - case icerisinde degisken yaratmak
+        //sikinti cikarabilir, calismas ise hallederiz sonra.
+        FILE flist;
+        flist = fopen("sorted_list.txt", "w+);
+        if (flist == NULL) {
+          printf("Failed creating file...\n);
+          break;
+        }
+                 
+        
+                      
+        break;
+      }
+      case 7: {
+        //TODO: Price guess
+        break;
+      }
+      default: {
+        pritf("Please enter an acceptable value\n");
+        break;
+      }
+        
+    }
+        
+    /*
     if (cevap==1){
       printf("Ev listesi \n");
       // TODO
@@ -51,6 +104,7 @@ int main(int argc,char * argv[]){
        // TODO
      }
     printf("Programdan cikiliyor\n");
+    */
   }
 
   return 0; 
