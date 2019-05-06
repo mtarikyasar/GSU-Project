@@ -24,32 +24,37 @@ int main(int argc,char * argv[]){
         print_house();
         break;
       }
+
       case 2: {
         get_house_byid();
         break;
       }
+
       case 3: {
         get_neighborhoods();
         break;
       }
+
       case 4: {
         mean_sale_prices();
         break;
       }
+
       case 5: {
         sort_houses();
         //TODO: Top 10 house
         break;
       }
+
       case 6: {
         sort_houses();
         //TODO: Create file, save the list
         //Tarik'a NOT: switch - case icerisinde degisken yaratmak
         //sikinti cikarabilir, calismas ise hallederiz sonra.
-        FILE flist;
-        flist = fopen("sorted_list.txt", "w+);
+        FILE *flist;
+        flist = fopen("sorted_list.txt", "w+");
         if (flist == NULL) {
-          printf("Failed creating file...\n);
+          printf("Failed creating file...\n");
           break;
         }
                 
@@ -57,10 +62,12 @@ int main(int argc,char * argv[]){
                       
         break;
       }
+
       case 7: {
         //TODO: Price guess
         break;
       }
+      
       default: {
         pritf("Please enter an acceptable value\n");
         break;
