@@ -36,7 +36,7 @@ int model_by_similarity(House* houses,House new_house){
   int k = 0;
 
   for (int i = 0; i < sizeArr; i++) {
-    if (!cmpstr(new_house.neighborhood, houses[i].neighborhood)) {
+    if (!strcmp(new_house.neighborhood, houses[i].neighborhood)) {
       ctr_hN++;
       realloc(housesNeigh, ctr_hN*sizeof(House));
       housesNeigh[ctr_hN-1] = houses[i];
@@ -226,11 +226,13 @@ int** get_multiplication(int** A, int** B){
   //Asagidaki islemi test et, kesin degil
   int res;
   for (int i = 0; i < rowA; i++) {
-    res = 0;
     for (int j = 0; j < colB; j++) {
-      res += A[i][j] * B[j][i];
+      res = 0;
+      for (int d = 0; d < rowB; d++) {
+        res += A[i][d] * B[d][j];
+      }
+      C[i][j] = res;
     }
-    C[i] = res;
   }
 
   return C;
@@ -261,12 +263,35 @@ int** make_prediction(char* filename,int** W){
   // TODO
   // 1 - filename olarak verilen test verisini oku,
   //   yeni houses dizisi olustur
+  FILE* fread = fopen(filename, "r");
+  char buffer[1];
+  int listSize = 0;
+  while(feof(fread)) {
+    fgets(buffer[0], "\n", fread);
+    listSize++;
+  }
+  House* houseList = malloc(sizeof(House)*listSize); 
+  fclose(fread);
+
+  read_house_data(filename, houseList, listSize);
+
   // 2 - create_data_matrices kullanarak X ve y matrislerini olustur
+  int** X;
+  int* y;
+  create_data_matrices(houseList, X, y);
+
   // 3 - Daha onceden hesaplanan W parametresini kullanarak
   //  fiyat tahmini yap, burda yapilmasi gereken
   //  X ve W matrislerinin carpimini bulmak
-  // 4 - Sonuclari bir dosyaya yaz
+  int** matRes = get_multiplication(X, W);
 
+  // 4 - Sonuclari bir dosyaya yaz
+  FILE* fprice = fopen("predicted_prices.txt", "w");
+
+  fprintf(fprice, "ID\tSalePrice\n");
+  for (int i = 0; i < listSize; i++) {
+    fprintf(fprice, "%d\t%d\n", houseList[i].id, matRes[i][0]);
+  }
 }
 
 
