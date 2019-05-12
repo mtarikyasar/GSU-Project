@@ -25,6 +25,14 @@ typedef struct house{
   char* kitchenqual;
 } House;
 
+typedef struct houseYear {
+  int year;
+  int price;
+  int counter;
+  int mean_price;
+  struct houseYear *next;
+} hYear;
+
 
 void read_house_data(char* filename, House houses[], int houseCount);
 void print_house(House house);

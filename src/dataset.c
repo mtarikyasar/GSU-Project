@@ -68,7 +68,7 @@ void read_house_data(char* filename, House houses[], int houseCount){
 void print_house(House house){
   printf("Print House dataset\n");
   // TODO
-  printf("House information: \n")
+  printf("House information: \n");
   printf("\tID: %d\n", house.id);
   printf("\tLot area: %d\n", house.lotarea);
   printf("\tStreet: %s\n", house.street);
@@ -113,6 +113,59 @@ House* get_neighborhoods(House *house, int houseCount, int id){
 float* mean_sale_prices(House* houses,char* criter_name){
   printf("Calculate mean sale prices by %s \n",criter_name);
   // TODO
+  int size;
+
+  if (!strcmp(criter_name, "year")) {
+    int minY = 3000, maxY = 0;
+    for (int i = 0; i < size; i++) {
+      if (houses[i].yearbuilt < minY) {
+        minY = houses[i].yearbuilt;
+      }
+      if (houses[i].yearbuilt > maxY) {
+        maxY = houses[i].yearbuilt;
+      }
+    }
+
+    int yearSize = maxY - minY;
+
+    hYear *yearTable[yearSize];
+    hYear *cur = *yearTable;
+    hYear *new = malloc(sizeof(hYear));
+
+    memset(yearTable, 0, sizeof(yearTable));
+
+    for (int i = 0; i < yearSize; i++) {
+      yearTable[i]->year = minY+i;
+      yearTable[i]->counter = 0;
+      yearTable[i] = malloc(sizeof(hYear)*(yearTable[i]->counter + 1));
+    }
+
+    sort_houses(houses, "year");
+
+    for (int i = 0, j = 0; i < size; i++) {
+      yearTable[i]->mean_price = 0;
+      cur = yearTable[i];
+      while (yearTable[i]->year == houses[j].yearbuilt) {
+        yearTable[i]->mean_price += houses[j].saleprice;
+        yearTable[i]->counter++; 
+        realloc(yearTable, sizeof(hYear)*yearTable[i]->counter);
+        new->year = houses[j].yearbuilt;
+        new->price = houses[j].saleprice;
+        for (int d = 0; cur != NULL; cur = cur->next) {
+          if(cur->next == NULL) {
+            cur->next = new;
+            new->next = NULL;
+            break;
+          }
+        }
+        cur = yearTable[i]; 
+        j++;
+      }
+      yearTable[i]->mean_price /= yearTable[i]->counter;
+    }
+
+  }
+
 
   return ;
 }
