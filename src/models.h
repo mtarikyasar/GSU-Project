@@ -1,7 +1,6 @@
-#include <stdio.h>
+#include<stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include "dataset.h"
+#include<string.h>
 
 #ifndef MODELS
 #define MODELS

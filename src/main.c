@@ -6,9 +6,8 @@ int main(int argc,char * argv[]){
   
   //TODO: Read database, read_house_data();
 
-  int houseCount = 1361;
+  int houseCount = 1360;
   House *houses = malloc(houseCount*sizeof(struct house));
-  
 
   read_house_data("data_train.csv", houses);
 
@@ -32,17 +31,17 @@ int main(int argc,char * argv[]){
       }
 
       case 2: {
-        //print_house(get_house_byid(houses, houseCount), houseCount);
+        get_house_byid(houses, houseCount);
         break;
       }
 
       case 3: {
-        //get_neighborhoods();
+        get_neighborhoods(houses, houseCount);
         break;
       }
 
       case 4: {
-        //mean_sale_prices();
+        mean_sale_prices(houses, houseCount);
         break;
       }
 
