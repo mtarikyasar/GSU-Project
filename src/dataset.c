@@ -179,35 +179,9 @@ void mean_sale_prices(House* houses, int houseCount){
 
   //////////////////////
 
-  House *newList;
-  int neighCtr = 0; //For counting different neighborhoods
-  int j = 0;
-  int avg = 0;
-  newList[0].neighborhood = malloc(sizeof(houses[0].neighborhood));
-  strcpy(newList[0].neighborhood, houses[0].neighborhood);
-  
   switch (criters) {
     case 1:
-      for (size_t i = 0; i < houseCount; i++)
-      {
-        if (strcmp(newList[j].neighborhood, houses[i].neighborhood) == 0)
-        {
-          newList[j].neighborhood = malloc(sizeof(houses[i].neighborhood));
-          strcpy(newList[j].neighborhood, houses[i].neighborhood);
-          neighCtr++;
-          j++;
-        }
-      }
 
-      for (size_t j = 0; j < neighCtr; j++)
-      {
-        for (size_t i = 0; i < houseCount; i++)
-        {
-          /* code */
-        }
-        
-      }
-      
       break;
     
     case 2:
