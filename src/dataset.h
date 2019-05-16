@@ -25,20 +25,15 @@ typedef struct house{
   char* kitchenqual;
 } House;
 
-typedef struct houseYear {
-  int year;
-  int price;
-  int counter;
-  int mean_price;
-  struct houseYear *next;
-} hYear;
 
-
-void read_house_data(char* filename, House houses[], int houseCount);
-void print_house(House house);
-House get_house_byid(int id, House *houses, int houseCount);
+int read_house_data(char* filename, House houses[]);
+void print_house(House *house, int houseCount);
+House get_house_byid(House *houses, int houseCount);
 House* get_neighborhoods(House *house, int houseCount, int id);
-float* mean_sale_prices(House* houses,char* criter_name);
+void mean_sale_prices(House* houses,char* criter_name, int houseCount);
 void sort_houses(House* houses,char* criter_name);
+
+int find_smallest_lotarea(House* houses, int houseCount);
+int find_biggest_lotarea(House* houses, int houseCount);
 
 #endif

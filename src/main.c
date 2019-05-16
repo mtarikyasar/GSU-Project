@@ -6,11 +6,11 @@ int main(int argc,char * argv[]){
   
   //TODO: Read database, read_house_data();
 
-  int houseCount = 100;
-  House *houses = malloc(101*sizeof(struct house));
+  int houseCount = 1361;
+  House *houses = malloc(houseCount*sizeof(struct house));
   
 
-  houseCount = read_house_data("data_test.csv", houses) + 1;
+  read_house_data("data_train.csv", houses);
 
   while(cevap != 0){
     printf("Emlak Programina Hos geldiniz!\n");
