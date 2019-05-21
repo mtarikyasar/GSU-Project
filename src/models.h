@@ -1,6 +1,7 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include<string.h>
+#include <string.h>
+#include "dataset.h"
 
 #ifndef MODELS
 #define MODELS
@@ -10,12 +11,11 @@
 
 
 int model_by_similarity(House* houses,House new_house);
-void create_data_matrices(House* houses,int** X,int* y);
-int** get_transpose(int** A, int size);
-int** get_inverse(int** A);
-int** get_multiplication(int** A, int** B);
-int** calculate_parameter(int** X, int* y);
-// ??? int** calculate_parameter(House* houses);
-int** make_prediction(char* filename,int** W);
+void create_data_matrices(House* houses, double** X, double* y);
+double** get_transpose(double** A, int size);
+double** get_inverse(double** A);
+double** get_multiplication(double** A, double** B);
+double** calculate_parameter(double** X, double* y);
+double** make_prediction(char* filename, double** W);
 
 #endif
