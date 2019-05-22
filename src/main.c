@@ -6,7 +6,7 @@ int main(int argc,char * argv[]){
   
   //TODO: Read database, read_house_data();
 
-  int houseCount = 1360;
+  int houseCount = calculate_house_count("data_train.csv");
   House *houses = malloc(houseCount*sizeof(struct house));
 
   read_house_data("data_train.csv", houses);
@@ -73,7 +73,7 @@ int main(int argc,char * argv[]){
         priceSim = model_by_similarity(houses, houses[0]);
         create_data_matrices(houses, x, y);
         w = calculate_parameter(x, y);
-        make_prediction("fsonuc", w);
+        make_prediction("fsonuc", w, houseCount);
 
         printf("Similarity: %.2lf\n", priceSim);
         break;

@@ -6,6 +6,26 @@
 #include "quick_sort_table.h"
 #define LINEMAXX 1024
 
+int calculate_house_count(char* filename){
+  char lineBuffer[LINEMAXX];
+  char *field;
+  int counter = 0;
+
+  FILE *dataFile = fopen(filename, "r");
+
+  fgets(lineBuffer, sizeof(lineBuffer), dataFile); //For first line
+
+
+  while((getc(dataFile) != EOF)){
+    fgets(lineBuffer, sizeof(lineBuffer), dataFile);
+    counter++;
+  }
+
+  fclose(dataFile);
+
+  return counter;
+}
+
 int read_house_data(char* filename, House houses[]){
   printf("Reading file: %s\n",filename);  
   // TODO
@@ -142,7 +162,7 @@ void mean_sale_prices(House* houses, int houseCount){
     printf("[3]Overall Quality\n");
     printf("[4]Overall Condition\n");
     printf("[5]Lot Area\n");
-    printf("[6]Years(in progress)\n");
+    printf("[6]Years\n");
     printf("Enter your choice: ");
     scanf("%d", &criters);
 
@@ -154,30 +174,17 @@ void mean_sale_prices(House* houses, int houseCount){
       int lim = 0;
 
     //For kitchenqual
-      int ctrEx = 0;
-      int ctrGd = 0;
-      int ctrTA = 0;
-      int ctrFa = 0;
-      int ctrPo = 0;
-      char kitchenQuality[4];
+      int kitQ[] = {0, 0, 0, 0, 0};
       double kitQua[] = {0, 0, 0, 0, 0};
 
     //For overallqual
-      //2 intervals for easy grouping
-      int ctr1 = 0;
-      int ctr2 = 0;
-      int ctr3 = 0;
-      int ctr4 = 0;
-      int ctr5 = 0;
+      //Interval 2 for easy grouping
+      int counterOQ[] = {0, 0, 0, 0, 0};
       double overallQual[] = {0, 0, 0, 0, 0};
 
     //For overallcond
-      //2 intervals for easy grouping
-      int ctr1_2 = 0;
-      int ctr2_2 = 0;
-      int ctr3_2 = 0;
-      int ctr4_2 = 0;
-      int ctr5_2 = 0;
+      //Interval 2 for easy grouping
+      int counterOC[] = {0, 0, 0, 0, 0};
       double overallcond[] = {0, 0, 0, 0, 0};
 
     //For lotarea
@@ -229,54 +236,46 @@ void mean_sale_prices(House* houses, int houseCount){
     case 2:
 
       for (size_t i = 0; i < houseCount; i++){
-
-        printf("%s\n", houses[i].kitchenqual);
-        strcpy(kitchenQuality, houses[i].kitchenqual);
-        
-        if (strcmp(kitchenQuality, houses[i].kitchenqual) == 0){
+        if (strncmp("Ex", houses[i].kitchenqual, 1) == 0){
           kitQua[0] = kitQua[0] + (double)houses[i].saleprice;
-          sleep(1);
-          ctrEx++; 
+          kitQ[0]++; 
         }
 
-        else if(strcmp(kitchenQuality, houses[i].kitchenqual) == 0){
+        else if(strncmp("Gd", houses[i].kitchenqual, 1) == 0){
           kitQua[1] = kitQua[1] + (double)houses[i].saleprice;
-          sleep(1);
-          ctrGd++;
+          kitQ[1]++;
         }
 
-        else if(strcmp(kitchenQuality, houses[i].kitchenqual) == 0){
+        else if(strncmp("TA", houses[i].kitchenqual, 1) == 0){
           kitQua[2] = kitQua[2] + (double)houses[i].saleprice;
-          sleep(1);
-          ctrTA++;
+          kitQ[2]++;
         }
 
-        else if(strcmp(kitchenQuality, houses[i].kitchenqual) == 0){
+        else if(strncmp("Fa", houses[i].kitchenqual, 1) == 0){
           kitQua[3] = kitQua[3] + (double)houses[i].saleprice;
-          sleep(1);
-          ctrFa++;
+          kitQ[3]++;
         }
 
-        else if(strcmp(kitchenQuality, houses[i].kitchenqual) == 0){
+        else if(strncmp("Po", houses[i].kitchenqual, 1) == 0){
           kitQua[4] = kitQua[4] + (double)houses[i].saleprice;
-          sleep(1);
-          ctrPo++;
+          kitQ[4]++;
         }
-
-        printf("1: %f\n", kitQua[0]);
-        printf("2: %f\n", kitQua[1]);
-        printf("3: %f\n", kitQua[2]);
-        printf("4: %f\n", kitQua[3]);
-        printf("5: %f\n", kitQua[4]);
       }
-  
 
-      /* printf("\n\nAverage Excellent Quality Kitchens:\t %6.0lf $\n", (kitQua[0]/(double)(ctrEx)));
-      printf("Average Good Quality Kitchens:\t\t %6.0lf $\n", (kitQua[1]/(double)(ctrGd)));
-      printf("Average Typical/Average Quality Kitchens:%6.0lf $\n", (kitQua[2]/(double)(ctrTA)));
-      printf("Average Fair Quality Kitchens:\t\t %6.0lf $\n", (kitQua[3]/(double)(ctrFa)));
-      printf("Average Poor Quality Kitchens:\t\t %6.0lf$\n\n\n", (kitQua[4]/(double)(ctrPo)));
-*/
+    //Sonucun nan cikmamasi icin kontrol
+
+      for (size_t i = 0; i < 5; i++){
+        if (kitQ[i] == 0){
+          kitQ[i] = 1;
+        } 
+      }
+      
+      printf("\n\nAverage Excellent Quality Kitchens:\t %6.0lf $\n", (kitQua[0]/(double)(kitQ[0])));
+      printf("Average Good Quality Kitchens:\t\t %6.0lf $\n", (kitQua[1]/(double)(kitQ[1])));
+      printf("Average Typical/Average Quality Kitchens:%6.0lf $\n", (kitQua[2]/(double)(kitQ[2])));
+      printf("Average Fair Quality Kitchens:\t\t %6.0lf $\n", (kitQua[3]/(double)(kitQ[3])));
+      printf("Average Poor Quality Kitchens:\t\t %6.0lf $\n\n\n", (kitQua[4]/(double)(kitQ[4])));
+
       break;
 
     case 3:
@@ -284,35 +283,41 @@ void mean_sale_prices(House* houses, int houseCount){
       for (size_t i = 0; i < houseCount; i++){
         if (0 <= houses[i].overallqual && houses[i].overallqual < 2){
           overallQual[0] = overallQual[0] + houses[i].saleprice;
-          ctr1++; 
+          counterOQ[0]++; 
         }
 
         else if(2 <= houses[i].overallqual && houses[i].overallqual < 4){
           overallQual[1] = overallQual[1] + houses[i].saleprice;
-          ctr2++;
+          counterOQ[1]++;
         }
 
         else if(4 <= houses[i].overallqual && houses[i].overallqual < 6){
           overallQual[2] = overallQual[2] + houses[i].saleprice;
-          ctr3++;
+          counterOQ[2]++;
         }
 
         else if(6 <= houses[i].overallqual && houses[i].overallqual < 8){
           overallQual[3] = overallQual[3] + houses[i].saleprice;
-          ctr4++;
+          counterOQ[3]++;
         }
 
         else if(8 <= houses[i].overallqual && houses[i].overallqual <= 10){
           overallQual[4] = overallQual[4] + houses[i].saleprice;
-          ctr5++;
+          counterOQ[4]++;
         }
       }
 
-      printf("\n\nAverage Price of 0-2 Overall Quality Houses:\t%6.0lf $\n", (overallQual[0]/(double)(ctr1)));
-      printf("Average Price of 2-4 Overall Quality Houses:\t%6.0lf $\n", (overallQual[1]/(double)(ctr2)));
-      printf("Average Price of 4-6 Overall Quality Houses:\t%6.0lf $\n", (overallQual[2]/(double)(ctr3)));
-      printf("Average Price of 6-8 Overall Quality Houses:\t%6.0lf $\n", (overallQual[3]/(double)(ctr4)));
-      printf("Average Price of 8-10 Overall Quality Houses:\t%6.0lf $\n\n\n", (overallQual[4]/(double)(ctr5)));
+      for (size_t i = 0; i < 5; i++){
+        if (counterOQ[i] == 0){
+          counterOQ[i] = 1;
+        } 
+      }
+
+      printf("\n\nAverage Price of 0-2 Overall Quality Houses:\t%6.0lf $\n", (overallQual[0]/(double)(counterOQ[0])));
+      printf("Average Price of 2-4 Overall Quality Houses:\t%6.0lf $\n", (overallQual[1]/(double)(counterOQ[1])));
+      printf("Average Price of 4-6 Overall Quality Houses:\t%6.0lf $\n", (overallQual[2]/(double)(counterOQ[2])));
+      printf("Average Price of 6-8 Overall Quality Houses:\t%6.0lf $\n", (overallQual[3]/(double)(counterOQ[3])));
+      printf("Average Price of 8-10 Overall Quality Houses:\t%6.0lf $\n\n\n", (overallQual[4]/(double)(counterOQ[4])));
 
     break;
 
@@ -323,35 +328,41 @@ void mean_sale_prices(House* houses, int houseCount){
       for (size_t i = 0; i < houseCount; i++){
         if (0 <= houses[i].overallcond && houses[i].overallcond < 2){
           overallcond[0] = overallcond[0] + houses[i].saleprice;
-          ctr1_2++; 
+          counterOC[0]++; 
         }
 
         else if(2 <= houses[i].overallcond && houses[i].overallcond < 4){
           overallcond[1] = overallcond[1] + houses[i].saleprice;
-          ctr2_2++;
+          counterOC[1]++;
         }
 
         else if(4 <= houses[i].overallcond && houses[i].overallcond < 6){
           overallcond[2] = overallcond[2] + houses[i].saleprice;
-          ctr3_2++;
+          counterOC[2]++;
         }
 
         else if(6 <= houses[i].overallcond && houses[i].overallcond < 8){
           overallcond[3] = overallcond[3] + houses[i].saleprice;
-          ctr4_2++;
+          counterOC[3]++;
         }
 
         else if(8 <= houses[i].overallcond && houses[i].overallcond <= 10){
           overallcond[4] = overallcond[4] + houses[i].saleprice;
-          ctr5_2++;
+          counterOC[4]++;
         }
       }
 
-      printf("\n\nAverage Price of 0-2 Overall Condition Houses:\t%6.0lf $\n", (overallcond[0]/(double)(ctr1_2)));
-      printf("Average Price of 2-4 Overall Condition Houses:\t%6.0lf $\n", (overallcond[1]/(double)(ctr2_2)));
-      printf("Average Price of 4-6 Overall Condition Houses:\t%6.0lf $\n", (overallcond[2]/(double)(ctr3_2)));
-      printf("Average Price of 6-8 Overall Condition Houses:\t%6.0lf $\n", (overallcond[3]/(double)(ctr4_2)));
-      printf("Average Price of 8-10 Overall Condition Houses:\t%6.0lf $\n\n\n", (overallcond[4]/(double)(ctr5_2)));
+      for (size_t i = 0; i < 5; i++){
+        if (counterOC[i] == 0){
+          counterOC[i] = 1;
+        } 
+      }
+
+      printf("\n\nAverage Price of 0-2 Overall Condition Houses:\t%6.0lf $\n", (overallcond[0]/(double)(counterOC[0])));
+      printf("Average Price of 2-4 Overall Condition Houses:\t%6.0lf $\n", (overallcond[1]/(double)(counterOC[1])));
+      printf("Average Price of 4-6 Overall Condition Houses:\t%6.0lf $\n", (overallcond[2]/(double)(counterOC[2])));
+      printf("Average Price of 6-8 Overall Condition Houses:\t%6.0lf $\n", (overallcond[3]/(double)(counterOC[3])));
+      printf("Average Price of 8-10 Overall Condition Houses:\t%6.0lf $\n\n\n", (overallcond[4]/(double)(counterOC[4])));
 
     break;
 
@@ -359,47 +370,55 @@ void mean_sale_prices(House* houses, int houseCount){
       
 
       for (size_t i = 0; i < houseCount; i++){
-        if (houses[i].lotarea > (biggestLotArea-interval) && houses[i].lotarea < biggestLotArea){
+        if (houses[i].lotarea > (biggestLotArea-interval) && houses[i].lotarea <= biggestLotArea){
           lotArea[0] += houses[i].lotarea;
-          counters[0] += 1;
+          counters[0]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*2) && houses[i].lotarea < (biggestLotArea-interval)){
+        if (houses[i].lotarea > (biggestLotArea-interval*2) && houses[i].lotarea <= (biggestLotArea-interval)){
           lotArea[1] += houses[i].lotarea;
-          counters[1] += 1;
+          counters[1]++;
         }
         
-        if (houses[i].lotarea > (biggestLotArea-interval*3) && houses[i].lotarea < (biggestLotArea-interval*2)){
+        if (houses[i].lotarea > (biggestLotArea-interval*3) && houses[i].lotarea <= (biggestLotArea-interval*2)){
           lotArea[2] += houses[i].lotarea;
-          counters[2] += 1;
+          counters[2]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*4) && houses[i].lotarea < (biggestLotArea*-interval*3)){
+        if (houses[i].lotarea > (biggestLotArea-interval*4) && houses[i].lotarea <= (biggestLotArea*-interval*3)){
           lotArea[3] += houses[i].lotarea;
-          counters[3] += 1;
+          counters[3]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*5) && houses[i].lotarea < (biggestLotArea-interval*4)){
+        if (houses[i].lotarea > (biggestLotArea-interval*5) && houses[i].lotarea <= (biggestLotArea-interval*4)){
           lotArea[4] += houses[i].lotarea;
-          counters[4] += 1;
+          counters[4]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*6) && houses[i].lotarea < (biggestLotArea-interval*5)){
+        if (houses[i].lotarea > (biggestLotArea-interval*6) && houses[i].lotarea <= (biggestLotArea-interval*5)){
           lotArea[5] += houses[i].lotarea;
-          counters[5] += 1;
+          counters[5]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*7) && houses[i].lotarea < (biggestLotArea-interval*6)){
+        if (houses[i].lotarea > (biggestLotArea-interval*7) && houses[i].lotarea <= (biggestLotArea-interval*6)){
           lotArea[6] += houses[i].lotarea;
-          counters[6] += 1;
+          counters[6]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*8) && houses[i].lotarea < (biggestLotArea-interval*7)){
+        if (houses[i].lotarea >= (biggestLotArea-interval*8) && houses[i].lotarea <= (biggestLotArea-interval*7)){
           lotArea[7] += houses[i].lotarea;
-          counters[7] += 1;
+          counters[7]++;
         }
       }
 
+      for (size_t i = 0; i < 8; i++)
+      {
+        if (counters[i] == 0)
+        {
+          counters[i] = 1;
+        }
+      }
+      
       printf("\n\nAverage price for the houses of lotarea between [%d-%.0lf]:\t%6.0lf $\n", biggestLotArea, ((double)biggestLotArea-interval), (lotArea[0]/counters[0]));
       printf("Average price for the houses of lotarea between [%.0lf-%.0lf]:\t%6.0lf $\n", ((double)biggestLotArea-interval*1), ((double)biggestLotArea-interval*2), (lotArea[1]/counters[1]));
       printf("Average price for the houses of lotarea between [%.0lf-%.0lf]:\t%6.0lf $\n", ((double)biggestLotArea-interval*2), ((double)biggestLotArea-interval*3), (lotArea[2]/counters[2]));
@@ -442,11 +461,11 @@ void mean_sale_prices(House* houses, int houseCount){
         yearTable[i].mean_price /= yearTable[i].counter;
       }
 
-      printf("Enter a year to find the mean price (%d - %d): ", minY, maxY);
+      printf("\nEnter a year to find the mean price (%d - %d): ", minY, maxY);
       scanf("%d", &yearAnswer);
       yearAnswer = yearSize - (maxY - yearAnswer) - 1;
       printf("There are %d houses built in %d\n", yearTable[yearAnswer].counter, yearTable[yearAnswer].year);
-      printf("Mean price is %.2lf\n", yearTable[yearAnswer].mean_price);
+      printf("Mean price is %.2lf\n\n", yearTable[yearAnswer].mean_price);
     
       break;
 

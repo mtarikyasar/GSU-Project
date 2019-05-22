@@ -33,7 +33,7 @@ typedef struct houseYear {
   struct houseYear *next;
 } hYear;
 
-
+int calculate_house_count(char* filename);
 int read_house_data(char* filename, House houses[]);
 void print_house(House *house, int houseCount);
 void print_house_by_id(House *house, int id);
