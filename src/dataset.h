@@ -1,6 +1,6 @@
 #include<stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include<string.h>
 
 #ifndef DATASET
 #define DATASET
@@ -25,16 +25,19 @@ typedef struct house{
   char* kitchenqual;
 } House;
 
+typedef struct houseYear {
+  int year;
+  float price;
+  int counter;
+  float mean_price;
+} hYear;
 
 int read_house_data(char* filename, House houses[]);
-void print_house(House *house, int houseCount);
-void print_house_by_id(House *house, int id);
-House *get_house_byid(House *house, int houseCount);
-void get_neighborhoods(House *house, int houseCount);
-void mean_sale_prices(House* houses, int houseCount);
+void print_house(House house);
+House get_house_byid(int id, House *houses, int houseCount);
+House* get_neighborhoods(House *house, int houseCount, int id);
+float mean_sale_prices(House* houses,char* criter_name);
 void sort_houses(House* houses,char* criter_name);
-
-int find_smallest_lotarea(House* houses, int houseCount);
-int find_biggest_lotarea(House* houses, int houseCount);
+void sort_table(hYear** table, int size);
 
 #endif
