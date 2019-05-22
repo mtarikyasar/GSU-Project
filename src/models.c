@@ -38,7 +38,7 @@ int model_by_similarity(House* houses,House new_house){
   for (int i = 0; i < sizeArr; i++) {
     if (!strcmp(new_house.neighborhood, houses[i].neighborhood)) {
       ctr_hN++;
-      realloc(housesNeigh, ctr_hN*sizeof(House));
+      housesNeigh = realloc(housesNeigh, ctr_hN*sizeof(House));
       housesNeigh[ctr_hN-1] = houses[i];
     }
   }
@@ -62,12 +62,12 @@ int model_by_similarity(House* houses,House new_house){
     if (housesNeigh[i].lotarea >= (new_house.lotarea-2000) && housesNeigh[i].lotarea <= (new_house.lotarea+2000))
     {
       ctr_C++;
-      realloc(lotAreaClose, ctr_C*sizeof(House));
+      lotAreaClose = realloc(lotAreaClose, ctr_C*sizeof(House));
       lotAreaClose[ctr_C-1] = housesNeigh[i];
     }
     else {
       ctr_nC++;
-      realloc(lotAreaNotClose, ctr_nC*sizeof(House));
+      lotAreaClose = realloc(lotAreaNotClose, ctr_nC*sizeof(House));
       lotAreaNotClose[ctr_nC-1] = housesNeigh[i];
     }
   }
@@ -105,12 +105,12 @@ int model_by_similarity(House* houses,House new_house){
     if (lotAreaClose[i].yearbuilt >= (new_house.yearbuilt-5) && lotAreaClose[i].yearbuilt <= (new_house.yearbuilt+5))
     {
       ctr_C++;
-      realloc(yearClose, ctr_C*sizeof(House));
+      yearClose = realloc(yearClose, ctr_C*sizeof(House));
       yearClose[ctr_C-1] = lotAreaClose[i];
     }
     else {
       ctr_nC++;
-      realloc(yearNotClose, ctr_nC*sizeof(House));
+      yearNotClose = realloc(yearNotClose, ctr_nC*sizeof(House));
       yearNotClose[ctr_nC-1] = lotAreaClose[i];
     }
   }
@@ -143,11 +143,11 @@ void create_data_matrices(House* houses, double** X, double* y){
   printf("Create data matrices from dataset\n");
   // TODO
   int size; //Ev sayisi
-  X = (int**) malloc(sizeof(int)*size);
-  y = (int*) malloc(sizeof(int)*size);
+  X = (double**) malloc(sizeof(double)*size);
+  y = (double*) malloc(sizeof(double)*size);
 
   for(int i = 0; i < size; i++) {
-    X[i] = (int*) malloc(sizeof(int)*2);
+    X[i] = (double*) malloc(sizeof(int)*2);
     X[i][0] = 1;
     //X[i][1] = alan bilgisi
     //y[i] = fiyat bilgisi
@@ -157,14 +157,15 @@ void create_data_matrices(House* houses, double** X, double* y){
 
 double** get_transpose(double** A, int size){
   double ** Atranspose; 
-  prdoublef("Get Transpose\n");
+  //prdoublef("Get Transpose\n"); Hata verdiriyordu
+  printf("Get Transpose\n");
   // TODO
   Atranspose = (double**) malloc(sizeof(double)*2);
-  for (int i = 0; i < 2; i++) {
-    Atranspose = (double*) malloc(sizeof(double)*size);
+  for (int i = 0; i < 2; i++){
+    Atranspose = (double**) malloc(sizeof(double)*size);
   }
 
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < size; i++){
     Atranspose[i][0] = A[0][i];
     Atranspose[i][1] = A[1][i];
   }
@@ -251,13 +252,13 @@ double** calculate_parameter(double** X, double* y){
   double** temp = get_multiplication(X, transX);
   temp = get_inverse(temp);
   temp = get_multiplication(temp, transX);
-  W = get_multiplication(temp, y);
+  W = get_multiplication(temp, &y);
 
   return W;
 
 }
 
-double** make_prediction(char* filename,double** W){
+double** make_prediction(char* filename,double** W, int listSize){
   double** predicted_prices;
   printf("Make prediction\n");
   // TODO
@@ -265,11 +266,7 @@ double** make_prediction(char* filename,double** W){
   //   yeni houses dizisi olustur
   FILE* fread = fopen(filename, "r");
   char buffer[1];
-  int listSize = 0;
-  while(feof(fread)) {
-    fgets(buffer[0], "\n", fread);
-    listSize++;
-  }
+
   House* houseList = malloc(sizeof(House)*listSize); 
   fclose(fread);
 
@@ -290,9 +287,6 @@ double** make_prediction(char* filename,double** W){
 
   fprintf(fprice, "ID\tSalePrice\n");
   for (int i = 0; i < listSize; i++) {
-    fprintf(fprice, "%d\t%d\n", houseList[i].id, matRes[i][0]);
+    fprintf(fprice, "%d\t%lff\n", houseList[i].id, matRes[i][0]);
   }
 }
-
-
-
