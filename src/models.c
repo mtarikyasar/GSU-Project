@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define MAT_COL 2
 
 double model_by_similarity(House* houses,House new_house, int houseCount){
   //printf("Find price for house %d\n",new_house.id);
@@ -124,55 +125,55 @@ double model_by_similarity(House* houses,House new_house, int houseCount){
 
 void create_data_matrices(House* houses, double** X, double* y, int size){
   printf("Create data matrices from dataset\n");
-  // TODO
-
-  X = (double**) malloc(sizeof(double)*size);
-  y = (double*) malloc(sizeof(double)*size);
 
   for(int i = 0; i < size; i++) {
-    X[i] = (double*) malloc(sizeof(int)*2);
     X[i][0] = 1;
     X[i][1] = houses[i].lotarea;
     y[i] = houses[i].saleprice;
+    //printf("%.2lf - %.2lf -- %.2lf || %d\n", X[i][0], X[i][1], y[i], i);
   }
-  printf("terbiyesiz\n");
   return;
 }
 
 double** get_transpose(double** A, int size){
   double ** Atranspose; 
-  //prdoublef("Get Transpose\n"); Hata verdiriyordu
   printf("Get Transpose\n");
   // TODO
-  Atranspose = (double**) malloc(sizeof(double)*2);
-  for (int i = 0; i < 2; i++){
-    Atranspose[i] = (double*) malloc(sizeof(double)*(size / 2));
+
+  Atranspose = malloc(MAT_COL * sizeof(double*));
+  for (int i = 0; i < MAT_COL; i++){
+    Atranspose[i] = malloc(size * sizeof(double));
   }
-  for (int i = 0; i < size/2; i++){
-    printf("testest\n");
-    Atranspose[i][0] = A[0][i];
-    Atranspose[i][1] = A[1][i];
+
+  for (int i = 0; i < size; i++){
+    Atranspose[0][i] = A[i][0];
+    Atranspose[1][i] = A[i][1];
   }
+  /*
+  for (int i = 0; i < 5; i++) {
+    printf("Xtrans:  %.2lf - %.2lf || %d\n", Atranspose[0][i], Atranspose[1][i], i);
+  } */
 
   return Atranspose;
 }
 
 
-double** get_inverse(double** A){
+double** get_inverse(double** A, int size) {
   double** Ainverse;
   printf("Get inverse\n");
   // TODO
-  double rowA = sizeof(A) / sizeof(A[0]);
-  double colA = sizeof(A[0]) / sizeof(A[0][0]);
+
+  double rowA = MAT_COL;
+  double colA = MAT_COL;
   if (rowA != colA) {
     printf("Can't get inverse of a non-square matrix.\n");
     return A;
   }
 
   //double temp[rowA][colA];
-  Ainverse = (double**) malloc(sizeof(double)*rowA);
+  Ainverse = malloc(sizeof(double)*rowA);
   for (int i = 0; i < rowA; i++) {
-    Ainverse[i] = (double*) malloc(sizeof(double)*colA);
+    Ainverse[i] = malloc(sizeof(double)*colA);
   }
 
   double det = A[0][0] * A[1][1] - A[1][0] * A[0][1];
@@ -183,6 +184,13 @@ double** get_inverse(double** A){
 
   double coef = A[1][1] * A[0][0] - A[0][1] * A[1][0];
 
+  for(int i = 0; i < 2; i++) {
+    for (int d = 0; d < 2; d++) {
+      printf(">>> %.lf\n",A[i][d]);
+    }
+  }
+  printf("wow >>> %.lf", coef);
+
   Ainverse[0][0] = A[1][1] / coef;
   Ainverse[0][1] = -1 * (A[0][1] / coef);
   Ainverse[1][0] = -1 * (A[1][0] / coef);
@@ -192,28 +200,26 @@ double** get_inverse(double** A){
 }
 
 
-double** get_multiplication(double** A, double** B){
+double** get_multiplication(double** A, double** B, int size){
   double ** C;
   printf("Multiplication\n");  
   // TODO
 
-  double rowA = sizeof(A) / sizeof(A[0]);
-  double colA = sizeof(A[0]) / sizeof(A[0][0]);
-  double rowB = sizeof(B) / sizeof(B[0]);
-  double colB = sizeof(B[0]) / sizeof(B[0][0]);
+  double rowA = size;
+  double colA = MAT_COL;
 
-  C = (double**) malloc(sizeof(double)*rowA);
+  C = malloc(size * sizeof(double*));
 
-  for (int i = 0; i < rowA; i++) {
-    C[i] = (double*) malloc(sizeof(double)*colB);
+  for (int i = 0; i < size; i++) {
+    C[i] = malloc(MAT_COL * sizeof(double));
   }
 
   //Asagidaki islemi test et, kesin degil
   double res;
-  for (int i = 0; i < rowA; i++) {
-    for (int j = 0; j < colB; j++) {
+  for (int i = 0; i < MAT_COL; i++) {
+    for (int j = 0; j < MAT_COL; j++) {
       res = 0;
-      for (int d = 0; d < rowB; d++) {
+      for (int d = 0; d < size; d++) {
         res += A[i][d] * B[d][j];
       }
       C[i][j] = res;
@@ -224,23 +230,30 @@ double** get_multiplication(double** A, double** B){
 }
 
 
-double** calculate_parameter(double** X, double* y){
+double** calculate_parameter(double** X, double* y, int size){
   double** W;
   printf("Calculate parameters for dataset\n");
   // TODO
-  double rowX = sizeof(X) / sizeof(X[0]);
-  double colX = sizeof(X[0]) / sizeof(X[0][0]);
-  //int size = rowX * colX;
-  int size = rowX;
+  double rowX = 2;//sizeof(X) / sizeof(X[0]);
+  double colX = 2;//sizeof(X[0]) / sizeof(X[0][0]);
 
   double** transX = get_transpose(X, size);
-  double** temp = get_multiplication(X, transX);
-  temp = get_inverse(temp);
-  temp = get_multiplication(temp, transX);
-  W = get_multiplication(temp, &y);
+  double** temp = get_multiplication(transX, X, size);
+
+  for (int i = 0; i < 2; i++) {
+    printf("multi:  %.2lf - %.2lf || %d\n", temp[i][0], temp[i][1], i);
+  }
+
+  temp = get_inverse(temp, size);
+
+  for (int i = 0; i < 2; i++) {
+    printf("multi:  %.2lf - %.2lf || %d\n", temp[i][0], temp[i][1], i);
+  }
+
+  temp = get_multiplication(temp, transX, size);
+  W = get_multiplication(temp, &y, size);
 
   return W;
-
 }
 
 double** make_prediction(char* filename, int listSize){
@@ -249,26 +262,30 @@ double** make_prediction(char* filename, int listSize){
   // TODO
   // 1 - filename olarak verilen test verisini oku,
   //   yeni houses dizisi olustur
-  
   House* houseList = malloc(sizeof(House)*listSize); 
   read_house_data(filename, houseList);
 
   // 2 - create_data_matrices kullanarak X ve y matrislerini olustur
-  double** X;
-  double* y;
-  printf("terbiyesiz\n");
+  double** X = malloc(listSize * sizeof(double*));
+  double* y = malloc(listSize * sizeof(double));
+  for (int i = 0; i < listSize; i++) {
+    X[i] = malloc(2 * sizeof(double));
+  }
+
   create_data_matrices(houseList, X, y, listSize);
-  printf("terbiyesiz\n");
+  
+  for (int i = 0; i < listSize; i++) {
+    printf("%.2lf - %.2lf -- %.2lf || %d\n", X[i][0], X[i][1], y[i], i);
+  } 
 
   // 3 - Daha onceden hesaplanan W parametresini kullanarak
   //  fiyat tahmini yap, burda yapilmasi gereken
   //  X ve W matrislerinin carpimini bulmak
   double** w;
-  printf("terbiyesiz\n");
 
-  w = calculate_parameter(X, y);
-  double** matRes = get_multiplication(X, w);
-  printf("terbiyesiz\n");
+  w = calculate_parameter(X, y, listSize);
+  double** matRes = get_multiplication(X, w, listSize);
+  printf("final terbiyesiz\n");
 
   // 4 - Sonuclari bir dosyaya yaz
   /*
@@ -279,9 +296,11 @@ double** make_prediction(char* filename, int listSize){
     fprintf(fprice, "%d\t%lff\n", houseList[i].id, matRes[i][0]);
   }
   */
+  /*
   for (int i = 0; i < listSize; i++) {
     printf("%d --- %.1lf\n", houseList[i].id, matRes[i][0]);
   }
+  */
 
   return matRes;
 }

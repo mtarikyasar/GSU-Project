@@ -14,11 +14,16 @@ int main(int argc,char * argv[]){
   int houseCountTest = calculate_house_count("data_test.csv");
 
   House *houses = malloc(houseCount*sizeof(struct house));
+  House *housesSave = malloc(houseCount*sizeof(struct house));
   House *housesTest = malloc(houseCountTest*sizeof(struct house));
+
 
   read_house_data("data_train.csv", houses);
   read_house_testData("data_test.csv", housesTest);
 
+  for (int i = 0; i < houseCount; i++) {
+    housesSave[i] = houses[i];
+  }
 
   double priceSim = 0;
 
@@ -72,7 +77,6 @@ int main(int argc,char * argv[]){
         //TODO: Create file, save the list
         
         printf("Please select a criter for sorting the house list:\n");
-        printf("Your choices: \n");
         printf("[0]Return to the main menu\n");
         printf("[1]Sale Prices\n");
         printf("[2]Years\n");
@@ -126,7 +130,6 @@ int main(int argc,char * argv[]){
           houses[i].saleprice, houses[i].neighborhood, houses[i].yearbuilt,
           houses[i].overallqual, houses[i].overallcond, houses[i].kitchenqual);
         }
-
         fclose(flist);
         printf("\n");
         break;
@@ -134,8 +137,6 @@ int main(int argc,char * argv[]){
                 
       case 7: {
         //TODO: Price guess
-        //priceSim = model_by_similarity(houses, houses[456], houseCount);
-        //printf("Similarity: %.2lf\n", priceSim);
 
         FILE* fsim = fopen("prices_by_similarity.txt", "w");
         fprintf(fsim, "ID: \t Price:\n");
@@ -145,8 +146,7 @@ int main(int argc,char * argv[]){
         }
         fclose(fsim);
 
-        //w = calculate_parameter(x, y);
-        //matRes = make_prediction("data_train.csv", houseCount);
+        matRes = make_prediction("data_train.csv", houseCount);
         break;
       }
       
@@ -155,6 +155,9 @@ int main(int argc,char * argv[]){
         break;
       }
         
+    }
+    for (int i = 0; i < houseCount; i++) {
+      houses[i] = housesSave[i];
     }
   }
 }
