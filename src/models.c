@@ -1,33 +1,16 @@
 #include "models.h"
 #include "dataset.h"
+#include "quick_sort_table.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int compare_lotArea(const void *a, const void *b) {
-  House *h1 = (House *) a;
-  House *h2 = (House *) b;
-  return h1->lotarea - h2->lotarea;
-}
-
-int compare_yearBuilt(const void *a, const void *b) {
-  House *h1 = (House *) a;
-  House *h2 = (House *) b;
-  return h1->yearbuilt - h2->yearbuilt;
-}
-
-void quick_sort_libc(int *array, int size, int compareType) {
-  qsort(array, size, sizeof(int), compareType);
-}
-
-
-int model_by_similarity(House* houses,House new_house){
+double model_by_similarity(House* houses,House new_house, int houseCount){
   //printf("Find price for house %d\n",new_house.id);
-  int price;
+  double price;
   //TODO
 
-  int sizeArr;  //BURAYI DUZELT
-
+  int sizeArr = houseCount;
   // 1 - Oncelikle ayni komsuluktaki evleri bulun
   House *housesNeigh = malloc(sizeof(House));
 
@@ -35,61 +18,61 @@ int model_by_similarity(House* houses,House new_house){
   int j = 0;
   int k = 0;
 
-  for (int i = 0; i < sizeArr; i++) {
+  for (int i = 0; i < houseCount; i++) {
     if (!strcmp(new_house.neighborhood, houses[i].neighborhood)) {
       ctr_hN++;
       housesNeigh = realloc(housesNeigh, ctr_hN*sizeof(House));
       housesNeigh[ctr_hN-1] = houses[i];
     }
   }
-
-
   
   // 2 - Bu evleri lotArea ya gore siralayin
-  quick_sort_libc(housesNeigh, ctr_hN, compare_lotArea);
+  quick_sort_type(housesNeigh, ctr_hN, AREA);
   
+  if (ctr_hN <= 5) {
+    for (int i = 0; i < ctr_hN; i++) {
+      price += housesNeigh[i].saleprice;
+    }
+    price /= ctr_hN;
+    return price;
+  }
+
   // 3 - new_house degiskenin lotarea parametresine en
   //  yakin evleri alin, bu evlerin alanlari 
   //  (new_house.lotarea+2000) ve (new_house.lotarea-2000) metrekare arasinda
   //   olabilir.
 
   House *lotAreaClose = malloc(sizeof(House));
-  House *lotAreaNotClose = malloc(sizeof(House));
+  //House *lotAreaNotClose = malloc(sizeof(House));
   int ctr_C = 0;
   int ctr_nC = 0;
 
-  for (int i = 0; i < sizeArr; i++) {
-    if (housesNeigh[i].lotarea >= (new_house.lotarea-2000) && housesNeigh[i].lotarea <= (new_house.lotarea+2000))
-    {
+  for (int i = 0; i < ctr_hN; i++) {
+    if (housesNeigh[i].lotarea >= (new_house.lotarea - 2000) && housesNeigh[i].lotarea <= (new_house.lotarea + 2000)) {
       ctr_C++;
       lotAreaClose = realloc(lotAreaClose, ctr_C*sizeof(House));
-      lotAreaClose[ctr_C-1] = housesNeigh[i];
+      lotAreaClose[ctr_C - 1] = housesNeigh[i];
     }
     else {
       ctr_nC++;
-      lotAreaClose = realloc(lotAreaNotClose, ctr_nC*sizeof(House));
-      lotAreaNotClose[ctr_nC-1] = housesNeigh[i];
+      //lotAreaClose = realloc(lotAreaNotClose, ctr_nC*sizeof(House));
+      //lotAreaNotClose[ctr_nC-1] = housesNeigh[i];
     }
   }
 
-  
-  /*  ESKI KOD
-  for (int i = 0; i < sizeArr; i++)
-  {
-    if (lotAreaArr[i] >= (new_house.lotarea-2000) && lotAreaArr[i] <= (new_house.lotarea+2000))
-    {
-      lotAreaClose[k] = lotAreaArr[i];
-    }
-    else 
-    {
-      lotAreaNotClose[j] = lotAreaArr[i];
-      j++;
-    }
-  } */
+  free(housesNeigh);
 
   // 4 - Kalan evleri yillarina gore siralayin
+  
+  quick_sort_type(lotAreaClose, ctr_C, YEAR);
 
-  quick_sort_libc(lotAreaClose, ctr_C, compare_yearBuilt);
+  if (ctr_C <= 5) {
+    for (int i = 0; i < ctr_C; i++) {
+      price += lotAreaClose[i].saleprice;
+    }
+    price /= ctr_C;
+    return price;
+  }
 
   // 5 - new_house degiskenin yearbuilt parametresine en yakin
   // evleri secin, bu evlerin yapim tarihleri
@@ -97,7 +80,7 @@ int model_by_similarity(House* houses,House new_house){
 
   sizeArr = ctr_C;
   House *yearClose = malloc(sizeof(House));
-  House *yearNotClose = malloc(sizeof(House));
+  //House *yearNotClose = malloc(sizeof(House));
   ctr_C = 0;
   ctr_nC = 0;
 
@@ -110,15 +93,16 @@ int model_by_similarity(House* houses,House new_house){
     }
     else {
       ctr_nC++;
-      yearNotClose = realloc(yearNotClose, ctr_nC*sizeof(House));
-      yearNotClose[ctr_nC-1] = lotAreaClose[i];
+      //yearNotClose = realloc(yearNotClose, ctr_nC*sizeof(House));
+      //yearNotClose[ctr_nC-1] = lotAreaClose[i];
     }
   }
+
+  free(lotAreaClose);
 
   // 6 - Ek olarak kaliteye gore secim yapabilirsiniz.
 
   sizeArr = ctr_C;
-
   if (ctr_C > 5) {
     //TODO optional
   }
@@ -130,28 +114,28 @@ int model_by_similarity(House* houses,House new_house){
     price += yearClose[i].saleprice;
   }
   price = price / sizeArr;
-  
-  // 8 - Yeni gelen ev icin fiyat degeri bu ortalama olmalidir.
-  
-  return price;
+  printf("%.2lf --- %d\n", price, sizeArr);
 
+  // 8 - Yeni gelen ev icin fiyat degeri bu ortalama olmalidir.
+  return price;
 }
 
 
 
-void create_data_matrices(House* houses, double** X, double* y){
+void create_data_matrices(House* houses, double** X, double* y, int size){
   printf("Create data matrices from dataset\n");
   // TODO
-  int size; //Ev sayisi
+
   X = (double**) malloc(sizeof(double)*size);
   y = (double*) malloc(sizeof(double)*size);
 
   for(int i = 0; i < size; i++) {
     X[i] = (double*) malloc(sizeof(int)*2);
     X[i][0] = 1;
-    //X[i][1] = alan bilgisi
-    //y[i] = fiyat bilgisi
+    X[i][1] = houses[i].lotarea;
+    y[i] = houses[i].saleprice;
   }
+  printf("terbiyesiz\n");
   return;
 }
 
@@ -162,10 +146,10 @@ double** get_transpose(double** A, int size){
   // TODO
   Atranspose = (double**) malloc(sizeof(double)*2);
   for (int i = 0; i < 2; i++){
-    Atranspose = (double**) malloc(sizeof(double)*size);
+    Atranspose[i] = (double*) malloc(sizeof(double)*(size / 2));
   }
-
-  for (int i = 0; i < size; i++){
+  for (int i = 0; i < size/2; i++){
+    printf("testest\n");
     Atranspose[i][0] = A[0][i];
     Atranspose[i][1] = A[1][i];
   }
@@ -246,7 +230,8 @@ double** calculate_parameter(double** X, double* y){
   // TODO
   double rowX = sizeof(X) / sizeof(X[0]);
   double colX = sizeof(X[0]) / sizeof(X[0][0]);
-  int size = rowX * colX;
+  //int size = rowX * colX;
+  int size = rowX;
 
   double** transX = get_transpose(X, size);
   double** temp = get_multiplication(X, transX);
@@ -258,35 +243,45 @@ double** calculate_parameter(double** X, double* y){
 
 }
 
-double** make_prediction(char* filename,double** W, int listSize){
+double** make_prediction(char* filename, int listSize){
   double** predicted_prices;
   printf("Make prediction\n");
   // TODO
   // 1 - filename olarak verilen test verisini oku,
   //   yeni houses dizisi olustur
-  FILE* fread = fopen(filename, "r");
-  char buffer[1];
-
+  
   House* houseList = malloc(sizeof(House)*listSize); 
-  fclose(fread);
-
   read_house_data(filename, houseList);
 
   // 2 - create_data_matrices kullanarak X ve y matrislerini olustur
   double** X;
   double* y;
-  create_data_matrices(houseList, X, y);
+  printf("terbiyesiz\n");
+  create_data_matrices(houseList, X, y, listSize);
+  printf("terbiyesiz\n");
 
   // 3 - Daha onceden hesaplanan W parametresini kullanarak
   //  fiyat tahmini yap, burda yapilmasi gereken
   //  X ve W matrislerinin carpimini bulmak
-  double** matRes = get_multiplication(X, W);
+  double** w;
+  printf("terbiyesiz\n");
+
+  w = calculate_parameter(X, y);
+  double** matRes = get_multiplication(X, w);
+  printf("terbiyesiz\n");
 
   // 4 - Sonuclari bir dosyaya yaz
+  /*
   FILE* fprice = fopen("predicted_prices.txt", "w");
 
   fprintf(fprice, "ID\tSalePrice\n");
   for (int i = 0; i < listSize; i++) {
     fprintf(fprice, "%d\t%lff\n", houseList[i].id, matRes[i][0]);
   }
+  */
+  for (int i = 0; i < listSize; i++) {
+    printf("%d --- %.1lf\n", houseList[i].id, matRes[i][0]);
+  }
+
+  return matRes;
 }

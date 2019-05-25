@@ -1,10 +1,11 @@
 #include "dataset.h"
+#include "quick_sort_table.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "quick_sort_table.h"
 #define LINEMAXX 1024
+
 
 int calculate_house_count(char* filename){
   char lineBuffer[LINEMAXX];
@@ -26,15 +27,124 @@ int calculate_house_count(char* filename){
   return counter;
 }
 
-int read_house_data(char* filename, House houses[]){
+void read_house_testData(char* filename, House houses[]){
+  printf("Reading file: %s\n",filename);  
+  // TODO
+  char lineBuffer[LINEMAXX];
+  char lineRead[LINEMAXX];
+  //char* lineRead = malloc(LINEMAXX * sizeof(char));
+  char *field; 
+  int i;
+
+  FILE *dataTestFile = fopen(filename, "r");
+
+  if (dataTestFile == 0){
+    printf("Failed to open file...\n");
+  }
+
+  fgets(lineBuffer, sizeof(lineBuffer), dataTestFile);
+  
+  i = 0;
+
+  while (fgets(lineRead, sizeof(lineRead), dataTestFile)) {
+    //Get ID
+      field = strtok(lineRead, ",");
+      houses[i].id = atoi(field);
+    //Get lotarea
+      field = strtok(NULL, ",");
+      houses[i].lotarea = atoi(field);
+    //Get street
+      field = strtok(NULL, ",");
+      houses[i].street = malloc(sizeof(field));
+      strcpy(houses[i].street, field);
+    //Get neighborhood
+      field = strtok(NULL, ",");
+      houses[i].neighborhood = malloc(sizeof(field));
+      strcpy(houses[i].neighborhood, field);
+    //Get yearbuilt
+      field = strtok(NULL, ",");
+      houses[i].yearbuilt = atoi(field);
+    //Get overallqual
+      field = strtok(NULL, ",");
+      houses[i].overallqual = atoi(field);
+    //Get overallcond
+      field = strtok(NULL, ",");
+      houses[i].overallcond = atoi(field);
+    //Get kitchenqual
+      field = strtok(NULL, ",");
+      houses[i].kitchenqual = malloc(sizeof(field));
+      strcpy(houses[i].kitchenqual, field);
+    //Get saleprice
+      houses[i].saleprice = 0;
+      i++;
+  }
+
+  fclose(dataTestFile);
+}
+
+void read_house_data(char* filename, House houses[]){
   printf("Reading file: %s\n",filename);  
   // TODO
   char lineBuffer[LINEMAXX];
   char lineRead[LINEMAXX];
   char *field; 
   int i;
-  int houseCount = 0;
+  FILE *dataFile = fopen(filename, "r");
 
+  if (dataFile == 0){
+    printf("Failed to open file...\n");
+  }
+
+  fgets(lineBuffer, sizeof(lineBuffer), dataFile);
+  
+  i = 0;
+
+  while (fgets(lineRead, sizeof(lineRead), dataFile)){
+    //Get ID
+      field = strtok(lineRead, ",");      
+      houses[i].id = atoi(field); 
+    //Get lotarea
+      field = strtok(NULL, ",");
+      houses[i].lotarea = atoi(field);
+    //Get street
+      field = strtok(NULL, ",");
+      houses[i].street = malloc(sizeof(field));
+      strcpy(houses[i].street, field);
+    //Get saleprice
+      field = strtok(NULL, ",");
+      houses[i].saleprice = atof(field);
+    //Get neighborhood
+      field = strtok(NULL, ",");
+      houses[i].neighborhood = malloc(sizeof(field));
+      strcpy(houses[i].neighborhood, field);
+    //Get yearbuilt
+      field = strtok(NULL, ",");
+      houses[i].yearbuilt = atoi(field);
+    //Get overallqual
+      field = strtok(NULL, ",");
+      houses[i].overallqual = atoi(field);
+    //Get overallcond
+      field = strtok(NULL, ",");
+      houses[i].overallcond = atoi(field);
+    //Get kitchenqual
+      field = strtok(NULL, ",");
+      houses[i].kitchenqual = malloc(sizeof(field));
+      strcpy(houses[i].kitchenqual, field);
+
+      i++;
+  }
+
+  fclose(dataFile);
+}
+
+/*
+void read_house_data(char* filename, House houses[]){
+  printf("Reading file: %s\n",filename);  
+  // TODO
+  char lineBuffer[LINEMAXX];
+  char lineRead[LINEMAXX];
+  char *field; 
+  int i;
   FILE *dataFile = fopen(filename, "r");
 
   if (dataFile == 0){
@@ -58,7 +168,7 @@ int read_house_data(char* filename, House houses[]){
           j = atoi(field);
         }
         
-        houses[i].id = j; 
+        houses[i].id = j + 100; 
       //Get lotarea
         field = strtok(NULL, ",");
         houses[i].lotarea = atoi(field);
@@ -68,7 +178,7 @@ int read_house_data(char* filename, House houses[]){
         strcpy(houses[i].street, field);
       //Get saleprice
         field = strtok(NULL, ",");
-        houses[i].saleprice = atoi(field);
+        houses[i].saleprice = atof(field);
       //Get neighborhood
         field = strtok(NULL, ",");
         houses[i].neighborhood = malloc(sizeof(field));
@@ -89,11 +199,11 @@ int read_house_data(char* filename, House houses[]){
 
       i++;
       j++;
-      houseCount = i;
   }
 
-  return houseCount;
+  fclose(dataFile);
 }
+*/
 
 void print_house(House *house, int houseCount){
   // TODO
@@ -103,7 +213,7 @@ void print_house(House *house, int houseCount){
     printf("\tID: %d\n", house[i].id);
     printf("\tLot area: %d\n", house[i].lotarea);
     printf("\tStreet: %s\n", house[i].street);
-    printf("\tSale price: %d\n", house[i].saleprice);
+    printf("\tSale price: %.lf\n", house[i].saleprice);
     printf("\tNeighborhood: %s\n", house[i].neighborhood);
     printf("\tBuilt in: %d\n", house[i].yearbuilt);
     printf("\tOverall Quality: %d\n", house[i].overallqual);
@@ -117,7 +227,7 @@ House *get_house_byid(House *house, int houseCount){
   printf("Get house with id: ");
   scanf("%d", &id);
   // TODO
-    print_house_by_id(house, id-1); //house dizisinin index'i id'den 1 deger kucuk oldugu icin id-1 yazdik
+    print_house_by_id(house, id); //house dizisinin index'i id'den 1 deger kucuk oldugu icin id-1 yazdik
 }
 
 void get_neighborhoods(House *houses, int houseCount){
@@ -128,25 +238,27 @@ void get_neighborhoods(House *houses, int houseCount){
   printf("Get neighborhoods of house with id\n");
   printf("Enter the house id of then neighborhood that you want to search: ");
   scanf("%d", &id);
+  id -= 101;
   // TODO
     for (size_t i = 0; i < houseCount; i++){
-      if (strcmp(houses[id-1].neighborhood, houses[i].neighborhood) == 0){
-          print_house_by_id(houses, i);
+      if (!strcmp(houses[id].neighborhood, houses[i].neighborhood)){
+        print_house_by_id(houses, i+101);
       }
     }
 }
 
 void print_house_by_id(House *house, int id){
-    printf("\n\n");
-    printf("\tID: %d\n", house[id].id);
-    printf("\tLot area: %d\n", house[id].lotarea);
-    printf("\tStreet: %s\n", house[id].street);
-    printf("\tSale price: %d\n", house[id].saleprice);
-    printf("\tNeighborhood: %s\n", house[id].neighborhood);
-    printf("\tBuilt in: %d\n", house[id].yearbuilt);
-    printf("\tOverall Quality: %d\n", house[id].overallqual);
-    printf("\tOverall Condition: %d\n", house[id].overallcond);
-    printf("\tKitchen Quality: %s\n", house[id].kitchenqual);
+  id -= 101;
+  printf("\n\n");
+  printf("\tID: %d\n", house[id].id);
+  printf("\tLot area: %d\n", house[id].lotarea);
+  printf("\tStreet: %s\n", house[id].street);
+  printf("\tSale price: %.lf\n", house[id].saleprice);
+  printf("\tNeighborhood: %s\n", house[id].neighborhood);
+  printf("\tBuilt in: %d\n", house[id].yearbuilt);
+  printf("\tOverall Quality: %d\n", house[id].overallqual);
+  printf("\tOverall Condition: %d\n", house[id].overallcond);
+  printf("\tKitchen Quality: %s\n", house[id].kitchenqual);
 }
 
 void mean_sale_prices(House* houses, int houseCount){
@@ -214,7 +326,6 @@ void mean_sale_prices(House* houses, int houseCount){
           listN[lim] = malloc(10*sizeof(char));
           ctrN = realloc(ctrN, (lim + 1)*sizeof(int));
           pricesN = realloc(pricesN, (lim + 1)*sizeof(double));
-          //strcpy(listN[lim - 1], houses[i].neighborhood);
           listN[lim] = strdup(houses[i].neighborhood);
           ctrN[lim] = 1;
           pricesN[lim] = houses[i].saleprice;
@@ -227,7 +338,8 @@ void mean_sale_prices(House* houses, int houseCount){
       for (int i = 0; i < lim; i++) {
         printf("%s\t%.2lf\n", listN[i], pricesN[i] / ctrN[i]);
       }
-      
+      printf("\n");
+
       free(listN);
       free(ctrN);
       free(pricesN);
@@ -449,7 +561,8 @@ void mean_sale_prices(House* houses, int houseCount){
         yearTable[i].price = 0;
       }
 
-      quick_sort_houses(houses, houseCount);
+      //quick_sort_houses(houses, houseCount);
+      quick_sort_type(houses, houseCount, YEAR);
 
       for (int i = 0, j = 0; i < yearSize; i++) {
         yearTable[i].mean_price = 0;
@@ -464,8 +577,13 @@ void mean_sale_prices(House* houses, int houseCount){
       printf("\nEnter a year to find the mean price (%d - %d): ", minY, maxY);
       scanf("%d", &yearAnswer);
       yearAnswer = yearSize - (maxY - yearAnswer) - 1;
-      printf("There are %d houses built in %d\n", yearTable[yearAnswer].counter, yearTable[yearAnswer].year);
-      printf("Mean price is %.2lf\n\n", yearTable[yearAnswer].mean_price);
+      if (yearTable[yearAnswer].counter != 0) {
+        printf("There are %d houses built in %d\n", yearTable[yearAnswer].counter, yearTable[yearAnswer].year);
+        printf("Mean price is %.2lf\n\n", yearTable[yearAnswer].mean_price);
+      }
+      else {
+        printf("There are no houses built in that year\n");
+      }
     
       break;
 
@@ -476,9 +594,12 @@ void mean_sale_prices(House* houses, int houseCount){
   return ;
 }
 
-void sort_houses(House* houses,char* criter_name){
-  printf("Sort house by %s and save \n",criter_name);
+void sort_houses(House* houses, int houseCount, int criter) {
   // TODO
+  quick_sort_type(houses, houseCount, criter);
+  for (int i = 0, j = houseCount - 1; i < houseCount/2; i++, j--) {
+    swapper(&houses[i], &houses[j]);
+  } 
   return ;
 }
 
@@ -487,7 +608,7 @@ int find_smallest_lotarea(House* houses, int houseCount){
 
   for (size_t i = 0; i < houseCount; i++){
     if(houses[i].lotarea <= min){
-        min = houses[i].lotarea;
+      min = houses[i].lotarea;
     }
   }
   
@@ -505,3 +626,22 @@ int find_biggest_lotarea(House* houses, int houseCount){
     
   return max;
 }
+
+void print_topN(House* houses, int houseCount, int N) {
+
+  quick_sort_type(houses, houseCount, PRICE);
+
+  for (int i = 1; i < N + 1; i++) {
+    printf("House information: \n");
+    printf("\tID: %d\n", houses[houseCount-i].id);
+    printf("\tLot area: %d\n", houses[houseCount-i].lotarea);
+    printf("\tStreet: %s\n", houses[houseCount-i].street);
+    printf("\tSale price: %.lf\n", houses[houseCount-i].saleprice);
+    printf("\tNeighborhood: %s\n", houses[houseCount-i].neighborhood);
+    printf("\tBuilt in: %d\n", houses[houseCount-i].yearbuilt);
+    printf("\tOverall Quality: %d\n", houses[houseCount-i].overallqual);
+    printf("\tOverall Condition: %d\n", houses[houseCount-i].overallcond);
+    printf("\tKitchen Quality: %s\n", houses[houseCount-i].kitchenqual);
+  }
+}
+

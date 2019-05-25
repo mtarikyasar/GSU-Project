@@ -9,21 +9,6 @@ void swapper(House *x, House *y) {
     *y = temp;
 }
 
-/*
-void quick_sort_unwrapper(House *array, int low, int high) {
-    int p;
-    if (low < high) {
-        p = partition(array, low, high);
-        quick_sort_unwrapper(array, low, p-1);
-        quick_sort_unwrapper(array, p+1, high);
-    }
-}
-
-void quick_sort_houses(House *array, int size) {
-    quick_sort_unwrapper(array, 0, size-1);
-}
-*/
-
 int partition_price(House *array, int low, int high) {
     int pivot = high;
     int new_pivot = low;
@@ -66,6 +51,35 @@ int partition_lotArea(House *array, int low, int high) {
     return new_pivot;
 }
 
+int partition_condition(House *array, int low, int high) {
+    int pivot = high;
+    int new_pivot = low;
+    int d;
+    for (d = low; d < high; d++) {
+        if (array[d].overallcond < array[pivot].overallcond) {
+            swapper(&array[d], &array[new_pivot]);
+            new_pivot++;
+        }
+    }
+    swapper(&array[new_pivot], &array[pivot]);
+    return new_pivot;
+}
+
+int partition_quality(House *array, int low, int high) {
+    int pivot = high;
+    int new_pivot = low;
+    int d;
+    for (d = low; d < high; d++) {
+        if (array[d].overallqual < array[pivot].overallqual) {
+            swapper(&array[d], &array[new_pivot]);
+            new_pivot++;
+        }
+    }
+    swapper(&array[new_pivot], &array[pivot]);
+    return new_pivot;
+}
+
+
 void quick_sort_unwrapper(House *array, int low, int high, int type) {
     int p;
     switch (type) {
@@ -92,6 +106,18 @@ void quick_sort_unwrapper(House *array, int low, int high, int type) {
                 quick_sort_unwrapper(array, p+1, high, type);
             }
             break;
+        case 4:
+            if (low < high) {
+                p = partition_condition(array, low, high);
+                quick_sort_unwrapper(array, low, p-1, type);
+                quick_sort_unwrapper(array, p+1, high, type);
+            }
+        case 5:
+            if (low < high) {
+                p = partition_quality(array, low, high);
+                quick_sort_unwrapper(array, low, p-1, type);
+                quick_sort_unwrapper(array, p+1, high, type);
+            }
     }
 }
 
