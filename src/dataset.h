@@ -5,7 +5,6 @@
 #ifndef DATASET
 #define DATASET
 
-
 /*
  * Ornek ev veri yapisi
  * Bu veri yapisini kullanabilir
@@ -38,7 +37,7 @@ int calculate_house_count(char* filename);
 void read_house_data(char* filename, House houses[]);
 void print_house(House *house, int houseCount);
 void print_house_by_id(House *house, int id);
-House *get_house_byid(House *house, int houseCount);
+void get_house_byid(House *house, int houseCount);
 void get_neighborhoods(House *house, int houseCount);
 void mean_sale_prices(House* houses, int houseCount);
 void sort_houses(House* houses, int houseCount, int criter);

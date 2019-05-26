@@ -21,7 +21,7 @@ int calculate_house_count(char* filename){
 
   fgets(lineBuffer, sizeof(lineBuffer), dataFile); //For first line
 
-  while((getc(dataFile) != EOF)){
+  while ((getc(dataFile) != EOF)) {
     fgets(lineBuffer, sizeof(lineBuffer), dataFile);
     counter++;
   }
@@ -42,7 +42,7 @@ void read_house_testData(char* filename, House houses[]){
   FILE *dataTestFile = fopen(filename, "r");
   if (dataTestFile == NULL) {
     printf("Failed to open file < %s >\n", filename);
-    printf("(At dataset.c, line 43)\n");
+    printf("(At dataset.c, line 42)\n");
     return;
   }
 
@@ -105,7 +105,7 @@ void read_house_data(char* filename, House houses[]){
   
   i = 0;
 
-  while (fgets(lineRead, sizeof(lineRead), dataFile)){
+  while (fgets(lineRead, sizeof(lineRead), dataFile)) {
     //Get ID
       field = strtok(lineRead, ",");      
       houses[i].id = atoi(field); 
@@ -145,8 +145,7 @@ void read_house_data(char* filename, House houses[]){
 
 void print_house(House *house, int houseCount){
   // TODO
-  for (size_t i = 0; i < houseCount; i++)
-  {
+  for (size_t i = 0; i < houseCount; i++) {
     printf("House information: \n");
     printf("\tID: %d\n", house[i].id);
     printf("\tLot area: %d\n", house[i].lotarea);
@@ -160,7 +159,7 @@ void print_house(House *house, int houseCount){
   }
 }
 
-House *get_house_byid(House *house, int houseCount){
+void get_house_byid(House *house, int houseCount){
   int id = 0;
   printf("Get house with id: ");
   scanf("%d", &id);
@@ -176,8 +175,8 @@ void get_neighborhoods(House *houses, int houseCount){
   scanf("%d", &id);
   id -= 101;
 
-  for (size_t i = 0; i < houseCount; i++){
-    if (!strcmp(houses[id].neighborhood, houses[i].neighborhood)){
+  for (size_t i = 0; i < houseCount; i++) {
+    if (!strcmp(houses[id].neighborhood, houses[i].neighborhood)) {
       print_house_by_id(houses, i+101);
     }
   }
@@ -220,6 +219,27 @@ void mean_sale_prices(House* houses, int houseCount){
       int* ctrN = malloc(sizeof(int));
       double* pricesN = malloc(sizeof(double));
       int lim = 0;
+
+      //Memory error checkif
+
+      if (listN == NULL){
+        printf("Failed to allocate memory for < listN > \n");
+        printf("(At dataset.c, line 218)");
+        return;
+      }
+
+      if (ctrN == NULL){
+        printf("Failed to allocate memory for < ctrN > \n");
+        printf("(At dataset.c, line 219)\n");
+        return;
+      }
+      
+      if (pricesN == NULL){
+        printf("Failed to allocate memory for < pricesN > \n");
+        printf("(At dataset.c, line 220)\n");
+        return;
+      }
+
 
     //For kitchenqual
       int kitQ[] = {0, 0, 0, 0, 0};
@@ -270,7 +290,7 @@ void mean_sale_prices(House* houses, int houseCount){
         cur = 0;
       }
 
-      printf("Neighbourhoods:\tMean Prices:\n");
+      printf("\nNeighborhoods:\tMean Prices:\n");
       for (int i = 0; i < lim; i++) {
         printf("%s\t%.2lf\n", listN[i], pricesN[i] / ctrN[i]);
       }
@@ -284,78 +304,78 @@ void mean_sale_prices(House* houses, int houseCount){
     case 2:
 
       for (size_t i = 0; i < houseCount; i++){
-        if (strncmp("Ex", houses[i].kitchenqual, 1) == 0){
+        if (strncmp("Ex", houses[i].kitchenqual, 1) == 0) {
           kitQua[0] = kitQua[0] + (double)houses[i].saleprice;
           kitQ[0]++; 
         }
 
-        else if(strncmp("Gd", houses[i].kitchenqual, 1) == 0){
+        else if(strncmp("Gd", houses[i].kitchenqual, 1) == 0) {
           kitQua[1] = kitQua[1] + (double)houses[i].saleprice;
           kitQ[1]++;
         }
 
-        else if(strncmp("TA", houses[i].kitchenqual, 1) == 0){
+        else if(strncmp("TA", houses[i].kitchenqual, 1) == 0) {
           kitQua[2] = kitQua[2] + (double)houses[i].saleprice;
           kitQ[2]++;
         }
 
-        else if(strncmp("Fa", houses[i].kitchenqual, 1) == 0){
+        else if(strncmp("Fa", houses[i].kitchenqual, 1) == 0) {
           kitQua[3] = kitQua[3] + (double)houses[i].saleprice;
           kitQ[3]++;
         }
 
-        else if(strncmp("Po", houses[i].kitchenqual, 1) == 0){
+        else if(strncmp("Po", houses[i].kitchenqual, 1) == 0) {
           kitQua[4] = kitQua[4] + (double)houses[i].saleprice;
           kitQ[4]++;
         }
       }
 
     //Sonucun nan cikmamasi icin kontrol
-
-      for (size_t i = 0; i < 5; i++){
+      for (size_t i = 0; i < 5; i++) {
         if (kitQ[i] == 0){
           kitQ[i] = 1;
         } 
       }
       
-      printf("\n\nAverage Excellent Quality Kitchens:\t %6.0lf $\n", (kitQua[0]/(double)(kitQ[0])));
-      printf("Average Good Quality Kitchens:\t\t %6.0lf $\n", (kitQua[1]/(double)(kitQ[1])));
-      printf("Average Typical/Average Quality Kitchens:%6.0lf $\n", (kitQua[2]/(double)(kitQ[2])));
-      printf("Average Fair Quality Kitchens:\t\t %6.0lf $\n", (kitQua[3]/(double)(kitQ[3])));
-      printf("Average Poor Quality Kitchens:\t\t %6.0lf $\n\n\n", (kitQua[4]/(double)(kitQ[4])));
+      printf("\n\nAverage Excellent Quality Kitchens:\t\t %6.0lf $\n", (kitQua[0]/(double)(kitQ[0])));
+      printf("Average Good Quality Kitchens:\t\t\t %6.0lf $\n", (kitQua[1]/(double)(kitQ[1])));
+      printf("Average Typical/Average Quality Kitchens:\t %6.0lf $\n", (kitQua[2]/(double)(kitQ[2])));
+      printf("Average Fair Quality Kitchens:\t\t\t %6.0lf $\n", (kitQua[3]/(double)(kitQ[3])));
+      printf("Average Poor Quality Kitchens:\t\t\t %6.0lf $\n\n\n", (kitQua[4]/(double)(kitQ[4])));
 
       break;
 
     case 3:
 
       for (size_t i = 0; i < houseCount; i++){
-        if (0 <= houses[i].overallqual && houses[i].overallqual < 2){
+        if (0 <= houses[i].overallqual && houses[i].overallqual < 2) {
           overallQual[0] = overallQual[0] + houses[i].saleprice;
           counterOQ[0]++; 
         }
 
-        else if(2 <= houses[i].overallqual && houses[i].overallqual < 4){
+        else if(2 <= houses[i].overallqual && houses[i].overallqual < 4) {
           overallQual[1] = overallQual[1] + houses[i].saleprice;
           counterOQ[1]++;
         }
 
-        else if(4 <= houses[i].overallqual && houses[i].overallqual < 6){
+        else if(4 <= houses[i].overallqual && houses[i].overallqual < 6) {
           overallQual[2] = overallQual[2] + houses[i].saleprice;
           counterOQ[2]++;
         }
 
-        else if(6 <= houses[i].overallqual && houses[i].overallqual < 8){
+        else if(6 <= houses[i].overallqual && houses[i].overallqual < 8) {
           overallQual[3] = overallQual[3] + houses[i].saleprice;
           counterOQ[3]++;
         }
 
-        else if(8 <= houses[i].overallqual && houses[i].overallqual <= 10){
+        else if(8 <= houses[i].overallqual && houses[i].overallqual <= 10) {
           overallQual[4] = overallQual[4] + houses[i].saleprice;
           counterOQ[4]++;
         }
       }
 
-      for (size_t i = 0; i < 5; i++){
+    //Sonucun nan cikmamasi icin kontrol
+      for (size_t i = 0; i < 5; i++) {
         if (counterOQ[i] == 0){
           counterOQ[i] = 1;
         } 
@@ -371,37 +391,37 @@ void mean_sale_prices(House* houses, int houseCount){
 
     case 4:
     //At 2 intervals
-      
 
-      for (size_t i = 0; i < houseCount; i++){
-        if (0 <= houses[i].overallcond && houses[i].overallcond < 2){
+      for (size_t i = 0; i < houseCount; i++) {
+        if (0 <= houses[i].overallcond && houses[i].overallcond < 2) {
           overallcond[0] = overallcond[0] + houses[i].saleprice;
           counterOC[0]++; 
         }
 
-        else if(2 <= houses[i].overallcond && houses[i].overallcond < 4){
+        else if(2 <= houses[i].overallcond && houses[i].overallcond < 4) {
           overallcond[1] = overallcond[1] + houses[i].saleprice;
           counterOC[1]++;
         }
 
-        else if(4 <= houses[i].overallcond && houses[i].overallcond < 6){
+        else if(4 <= houses[i].overallcond && houses[i].overallcond < 6) {
           overallcond[2] = overallcond[2] + houses[i].saleprice;
           counterOC[2]++;
         }
 
-        else if(6 <= houses[i].overallcond && houses[i].overallcond < 8){
+        else if(6 <= houses[i].overallcond && houses[i].overallcond < 8) {
           overallcond[3] = overallcond[3] + houses[i].saleprice;
           counterOC[3]++;
         }
 
-        else if(8 <= houses[i].overallcond && houses[i].overallcond <= 10){
+        else if(8 <= houses[i].overallcond && houses[i].overallcond <= 10) {
           overallcond[4] = overallcond[4] + houses[i].saleprice;
           counterOC[4]++;
         }
       }
 
-      for (size_t i = 0; i < 5; i++){
-        if (counterOC[i] == 0){
+    //Sonucun nan cikmamasi icin kontrol
+      for (size_t i = 0; i < 5; i++) {
+        if (counterOC[i] == 0) {
           counterOC[i] = 1;
         } 
       }
@@ -416,53 +436,51 @@ void mean_sale_prices(House* houses, int houseCount){
 
     case 5:
       
-
       for (size_t i = 0; i < houseCount; i++){
-        if (houses[i].lotarea > (biggestLotArea-interval) && houses[i].lotarea <= biggestLotArea){
+        if (houses[i].lotarea > (biggestLotArea-interval) && houses[i].lotarea <= biggestLotArea) {
           lotArea[0] += houses[i].lotarea;
           counters[0]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*2) && houses[i].lotarea <= (biggestLotArea-interval)){
+        else if (houses[i].lotarea > (biggestLotArea-interval*2) && houses[i].lotarea <= (biggestLotArea-interval)) {
           lotArea[1] += houses[i].lotarea;
           counters[1]++;
         }
         
-        if (houses[i].lotarea > (biggestLotArea-interval*3) && houses[i].lotarea <= (biggestLotArea-interval*2)){
+        else if (houses[i].lotarea > (biggestLotArea-interval*3) && houses[i].lotarea <= (biggestLotArea-interval*2)) {
           lotArea[2] += houses[i].lotarea;
           counters[2]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*4) && houses[i].lotarea <= (biggestLotArea*-interval*3)){
+        else if (houses[i].lotarea > (biggestLotArea-interval*4) && houses[i].lotarea <= (biggestLotArea*-interval*3)) {
           lotArea[3] += houses[i].lotarea;
           counters[3]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*5) && houses[i].lotarea <= (biggestLotArea-interval*4)){
+        else if (houses[i].lotarea > (biggestLotArea-interval*5) && houses[i].lotarea <= (biggestLotArea-interval*4)) {
           lotArea[4] += houses[i].lotarea;
           counters[4]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*6) && houses[i].lotarea <= (biggestLotArea-interval*5)){
+        else if (houses[i].lotarea > (biggestLotArea-interval*6) && houses[i].lotarea <= (biggestLotArea-interval*5)) {
           lotArea[5] += houses[i].lotarea;
           counters[5]++;
         }
 
-        if (houses[i].lotarea > (biggestLotArea-interval*7) && houses[i].lotarea <= (biggestLotArea-interval*6)){
+        else if (houses[i].lotarea > (biggestLotArea-interval*7) && houses[i].lotarea <= (biggestLotArea-interval*6)) {
           lotArea[6] += houses[i].lotarea;
           counters[6]++;
         }
 
-        if (houses[i].lotarea >= (biggestLotArea-interval*8) && houses[i].lotarea <= (biggestLotArea-interval*7)){
+        else if (houses[i].lotarea >= (biggestLotArea-interval*8) && houses[i].lotarea <= (biggestLotArea-interval*7)) {
           lotArea[7] += houses[i].lotarea;
           counters[7]++;
         }
       }
 
-      for (size_t i = 0; i < 8; i++)
-      {
-        if (counters[i] == 0)
-        {
+    //Sonucun nan cikmamasi icin kontrol
+      for (size_t i = 0; i < 8; i++) {
+        if (counters[i] == 0) {
           counters[i] = 1;
         }
       }
@@ -490,6 +508,10 @@ void mean_sale_prices(House* houses, int houseCount){
 
       int yearSize = maxY - minY + 1;
       hYear *yearTable = malloc(yearSize*sizeof(hYear));
+      if (yearTable == NULL) {
+        printf("Failed to allocate memory for < yearTable >\n");
+        printf("(At dataset.c, line 510)\n");
+      }
       for (int i = 0; i < yearSize; i++) {
         yearTable[i].year = minY + i;
         yearTable[i].counter = 0;
@@ -516,7 +538,7 @@ void mean_sale_prices(House* houses, int houseCount){
         printf("Mean price is %.2lf\n\n", yearTable[yearAnswer].mean_price);
       }
       else {
-        printf("There are no houses built in that year\n");
+        printf("There are no houses built in that year\n\n");
       }
 
       free(yearTable); yearTable = NULL;
@@ -541,7 +563,7 @@ void sort_houses(House* houses, int houseCount, int criter) {
 int find_smallest_lotarea(House* houses, int houseCount){
   int min = houses[0].lotarea;
 
-  for (size_t i = 0; i < houseCount; i++){
+  for (size_t i = 0; i < houseCount; i++) {
     if(houses[i].lotarea <= min){
       min = houses[i].lotarea;
     }
@@ -553,7 +575,7 @@ int find_smallest_lotarea(House* houses, int houseCount){
 int find_biggest_lotarea(House* houses, int houseCount){
   int max = houses[0].lotarea;
 
-  for (size_t i = 0; i < houseCount; i++){
+  for (size_t i = 0; i < houseCount; i++) {
     if (houses[i].lotarea >= max){
       max = houses[i].lotarea;
     }

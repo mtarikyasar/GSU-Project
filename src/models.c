@@ -190,6 +190,13 @@ double** get_transpose(double** A, int size){
     Atranspose[i] = malloc(size * sizeof(double));
   }
 
+  if (Atranspose == NULL) {
+    printf("Failed to allocate memory for matrix < Atranspose >\n");
+    printf("(At models.c, line 188-190)\n");
+    return 0;
+  }
+  
+
   for (int i = 0; i < size; i++){
     Atranspose[0][i] = A[i][0];
     Atranspose[1][i] = A[i][1];
@@ -206,6 +213,12 @@ double** get_inverse(double** A, int size) {
   Ainverse = malloc(MAT_COL * sizeof(double));
   for (int i = 0; i < MAT_COL; i++) {
     Ainverse[i] = malloc(MAT_COL * sizeof(double));
+  }
+
+  if (Ainverse == NULL) {
+    printf("Failed to allocate memory for matrix < Ainverse >\n");
+    printf("(At models.c, line 212-214)\n");
+    return 0;
   }
 
   double det = A[0][0] * A[1][1] - A[1][0] * A[0][1];
@@ -230,6 +243,12 @@ double** get_multiplication(double** A, double** B, int rowA, int colB, int colA
   C = malloc(rowA * sizeof(double*));
   for (int i = 0; i < rowA; i++) {
     C[i] = malloc(colB * sizeof(double));
+  }
+
+  if (C == NULL) {
+    printf("Failed to allocate memory for matrix < C >\n");
+    printf("(At models.c, line 241-243)\n");
+    return 0;
   }
 
   double res;
@@ -261,6 +280,12 @@ double** calculate_parameter(double** X, double* y, int size){
     tempY[i][0] = y[i];
   }
 
+  if (tempY == NULL) {
+    printf("Failed to allocate memory for matrix < tempY >\n");
+    printf("(At models.c, line 274-276)\n");
+    return 0;
+  }
+
   W = get_multiplication(temp, tempY, MAT_COL, MAT_COL, size);
 
   return W;
@@ -274,11 +299,29 @@ void make_prediction(char* filename, double** W, int listSize){
   House* houseList = malloc(sizeof(House)*listSize); 
   read_house_testData(filename, houseList);
 
+  if (houseList == NULL) {
+    printf("Failed to allocate memory for struct array < houseList >\n");
+    printf("(At models.c, line 295)\n");
+    return;
+  }
+
   // 2 - create_data_matrices kullanarak X ve y matrislerini olustur
   double** X = malloc(listSize * sizeof(double*));
   double* y = malloc(listSize * sizeof(double));
   for (int i = 0; i < listSize; i++) {
     X[i] = malloc(2 * sizeof(double));
+  }
+
+  if (X == NULL) {
+    printf("Failed to allocate memory for matrix < X >\n");
+    printf("(At models.c, line 309-312)\n");
+    return;
+  }
+
+  if (y == NULL) {
+    printf("Failed to allocate memory for matrix < y >\n");
+    printf("(At models.c, line 310)\n");
+    return;
   }
 
   create_data_matrices(houseList, X, y, listSize);
@@ -291,6 +334,13 @@ void make_prediction(char* filename, double** W, int listSize){
   for (int i = 0; i < listSize; i++) {
     matRes[i] = malloc(sizeof(double));
   }
+
+  if (y == NULL) {
+    printf("Failed to allocate memory for matrix < matRes >\n");
+    printf("(At models.c, line 333-335)\n");
+    return;
+  }
+
   matRes = get_multiplication(X, W, listSize, 1, MAT_COL);
 
   // 4 - Sonuclari bir dosyaya yaz

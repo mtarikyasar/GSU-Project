@@ -95,7 +95,7 @@ int main(int argc,char * argv[]){
       case 6: {
         //TODO: Create file, save the list
         
-        printf("Please select a criter for sorting the house list:\n");
+        printf("\nPlease select a criter for sorting the house list:\n");
         printf("[0]Return to the main menu\n");
         printf("[1]Sale Prices\n");
         printf("[2]Years\n");
@@ -143,9 +143,9 @@ int main(int argc,char * argv[]){
           break;
         }
 
-        fprintf(flist, "ID\tLotArea\tStreet\tSalePrice\tNeighborhood\tYearBuilt\tOverallQuality\tOverallCondition\tKitchenQuality\n");      
+        fprintf(flist, " ID\t\tLotArea\t\tStreet\tSalePrice\tNeighborhood\tYearBuilt\tOverallQuality\tOverallCondition\tKitchenQuality\n");      
         for (int i = 0; i < houseCount; i++) {
-          fprintf(flist, "%d\t%d\t%s\t%.lf\t%s\t%d\t%d\t%d\t%s\n", 
+          fprintf(flist, "%4d\t%4d\t\t%s\t%2.0lf\t\t%s\t\t  %8d\t\t%8d\t\t%9d\t\t\t\t  %s\n", 
           houses[i].id, houses[i].lotarea, houses[i].street, 
           houses[i].saleprice, houses[i].neighborhood, houses[i].yearbuilt,
           houses[i].overallqual, houses[i].overallcond, houses[i].kitchenqual);
