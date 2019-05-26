@@ -127,4 +127,4 @@ void quick_sort_unwrapper(House *array, int low, int high, int type) {
 
 void quick_sort_type(House *array, int size, int type) {
     quick_sort_unwrapper(array, 0, size-1, type);
-}
+} 
