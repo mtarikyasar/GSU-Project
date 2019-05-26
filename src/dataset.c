@@ -13,9 +13,13 @@ int calculate_house_count(char* filename){
   int counter = 0;
 
   FILE *dataFile = fopen(filename, "r");
+  if (dataFile == NULL) {
+    printf("Failed to open file < %s >\n", filename);
+    printf("(At dataset.c, line 15)\n");
+    return 1;
+  }
 
   fgets(lineBuffer, sizeof(lineBuffer), dataFile); //For first line
-
 
   while((getc(dataFile) != EOF)){
     fgets(lineBuffer, sizeof(lineBuffer), dataFile);
@@ -32,14 +36,14 @@ void read_house_testData(char* filename, House houses[]){
   // TODO
   char lineBuffer[LINEMAXX];
   char lineRead[LINEMAXX];
-  //char* lineRead = malloc(LINEMAXX * sizeof(char));
   char *field; 
   int i;
 
   FILE *dataTestFile = fopen(filename, "r");
-
-  if (dataTestFile == 0){
-    printf("Failed to open file...\n");
+  if (dataTestFile == NULL) {
+    printf("Failed to open file < %s >\n", filename);
+    printf("(At dataset.c, line 43)\n");
+    return;
   }
 
   fgets(lineBuffer, sizeof(lineBuffer), dataTestFile);
@@ -89,10 +93,12 @@ void read_house_data(char* filename, House houses[]){
   char lineRead[LINEMAXX];
   char *field; 
   int i;
-  FILE *dataFile = fopen(filename, "r");
 
-  if (dataFile == 0){
-    printf("Failed to open file...\n");
+  FILE *dataFile = fopen(filename, "r");
+  if (dataFile == NULL) {
+    printf("Failed to open file < %s >\n", filename);
+    printf("(At dataset.c, line 97)\n");
+    return;
   }
 
   fgets(lineBuffer, sizeof(lineBuffer), dataFile);
@@ -270,9 +276,9 @@ void mean_sale_prices(House* houses, int houseCount){
       }
       printf("\n");
 
-      free(listN);
-      free(ctrN);
-      free(pricesN);
+      free(listN); listN = NULL;
+      free(ctrN); ctrN = NULL;
+      free(pricesN); pricesN = NULL;
       break;
     
     case 2:
@@ -513,6 +519,7 @@ void mean_sale_prices(House* houses, int houseCount){
         printf("There are no houses built in that year\n");
       }
 
+      free(yearTable); yearTable = NULL;
       break;
 
     default:
@@ -523,7 +530,7 @@ void mean_sale_prices(House* houses, int houseCount){
 }
 
 void sort_houses(House* houses, int houseCount, int criter) {
-  // TODO
+  printf("Sorting houses...\n");
   quick_sort_type(houses, houseCount, criter);
   for (int i = 0, j = houseCount - 1; i < houseCount/2; i++, j--) {
     swapper(&houses[i], &houses[j]);

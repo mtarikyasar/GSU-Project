@@ -112,12 +112,16 @@ void quick_sort_unwrapper(House *array, int low, int high, int type) {
                 quick_sort_unwrapper(array, low, p-1, type);
                 quick_sort_unwrapper(array, p+1, high, type);
             }
+            break;
         case 5:
             if (low < high) {
                 p = partition_quality(array, low, high);
                 quick_sort_unwrapper(array, low, p-1, type);
                 quick_sort_unwrapper(array, p+1, high, type);
             }
+            break;
+        default: 
+            break;
     }
 }
 

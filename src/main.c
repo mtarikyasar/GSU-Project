@@ -3,31 +3,45 @@
 #include"quick_sort_table.h"
 
 int main(int argc,char * argv[]){
+  if (argc != 3) {
+    printf("Usage: ./main [file to read] [file to calculate the prices]\n");
+    printf("Exiting program...\n");
+    return 0;
+  }
+
   int cevap = 1;
-  int answrID = 0;
   int topN = 0;
   int criter;
+  double** w;
 
-  //TODO: Read database, read_house_data();
-
-  int houseCount = calculate_house_count("data_train.csv");
-  int houseCountTest = calculate_house_count("data_test.csv");
+  int houseCount = calculate_house_count(argv[1]);
+  int houseCountTest = calculate_house_count(argv[2]);
 
   House *houses = malloc(houseCount*sizeof(struct house));
-  House *housesSave = malloc(houseCount*sizeof(struct house));
-  House *housesTest = malloc(houseCountTest*sizeof(struct house));
+  if (houses == NULL) {
+    printf("Failed to allocate memory for struct array < houses >\n");
+    printf("(At main.c, line 20)\n");
+  }
 
+  House *housesSave = malloc(houseCount*sizeof(struct house));
+  if (housesSave == NULL) {
+    printf("Failed to allocate memory for struct array < housesSave >\n");
+    printf("(At main.c, line 26)\n");
+  }
+
+  House *housesTest = malloc(houseCountTest*sizeof(struct house));
+  if (houses == NULL) {
+    printf("Failed to allocate memory for struct array < housesTest >\n");
+    printf("(At main.c, line 32)\n");
+  }
 
   read_house_data("data_train.csv", houses);
   read_house_testData("data_test.csv", housesTest);
+  printf("\n");
 
   for (int i = 0; i < houseCount; i++) {
     housesSave[i] = houses[i];
   }
-
-  double priceSim = 0;
-
-  double** matRes;
 
   while(cevap != 0){
     printf("Emlak Programina Hos geldiniz!\n");
@@ -40,9 +54,14 @@ int main(int argc,char * argv[]){
     printf("6 - Sirali ev listesini kaydet\n");
     printf("7 - Fiyat tahmini yap\n");
     printf("Programdan cikmak icin 0 a basiniz.\n");
+    printf("Cevabiniz: ");
     scanf("%d",&cevap);
     
     switch (cevap) {
+      case 0: 
+        printf("Exiting program...\n");
+        break;
+    
       case 1: {
         print_house(houses, houseCount);
         break;
@@ -119,7 +138,8 @@ int main(int argc,char * argv[]){
         
         FILE* flist = fopen("sorted_list.txt", "w");
         if (flist == NULL) {
-          printf("Failed to save sorted list in file...\n");
+          printf("Failed to create file < sorted_list >\n");
+          printf("(At main.c, line 139)\n");
           break;
         }
 
@@ -131,27 +151,54 @@ int main(int argc,char * argv[]){
           houses[i].overallqual, houses[i].overallcond, houses[i].kitchenqual);
         }
         fclose(flist);
-        printf("\n");
+        
+        printf("Sorted list successfully saved to sorted_list.txt file\n\n");
         break;
       }
                 
       case 7: {
-        //TODO: Price guess
-
         FILE* fsim = fopen("prices_by_similarity.txt", "w");
+        if (fsim == NULL) {
+          printf("Failed to create file < prices_by_similarity >\n");
+          printf("(At main.c, line 160)\n");
+          break;
+        }
+
         fprintf(fsim, "ID: \t Price:\n");
+        printf("Karsilastirma yontemiyle fiyat tahmini yapiliyor...\n");
         for (int i = 0; i < houseCountTest; i++) {
           housesTest[i].saleprice = model_by_similarity(houses, housesTest[i], houseCount);
           fprintf(fsim, "%d \t %.2lf\n", housesTest[i].id, housesTest[i].saleprice);
         }
         fclose(fsim);
+        printf("Islem tamamlandi! Fiyat tahminleri prices_by_similarity.txt dosyasina kaydedildi.\n\n");
+        
+        double** X = malloc(houseCount * sizeof(double*));
+        double* y = malloc(houseCount * sizeof(double));
+        for (int i = 0; i < houseCount; i++) {
+          X[i] = malloc(2 * sizeof(double));
+        }
+        if ((X == NULL) || (y == NULL)) {
+          printf("Failed to allocate memory for matrices < X > and < y >\n");
+          printf("(At main.c, line 176)\n");
+          break;
+        }        
 
-        matRes = make_prediction("data_train.csv", houseCount);
+        create_data_matrices(houses, X, y, houseCount);
+        w = calculate_parameter(X, y, houseCount);
+        make_prediction("data_test.csv", w, houseCountTest);
+        
+        for (int i = 0; i < houseCount; i++) {
+          free(X[i]);
+        }
+        free(X); free(y);
+        y = NULL; X = NULL;
+
         break;
       }
       
       default: {
-        printf("Please enter an acceptable value\n");
+        printf("Please enter an acceptable value\n\n");
         break;
       }
         
@@ -160,4 +207,6 @@ int main(int argc,char * argv[]){
       houses[i] = housesSave[i];
     }
   }
+
+  return 0;
 }
