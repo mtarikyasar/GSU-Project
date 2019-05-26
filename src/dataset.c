@@ -82,7 +82,6 @@ void read_house_testData(char* filename, House houses[]){
       houses[i].saleprice = 0;
       i++;
   }
-
   fclose(dataTestFile);
 }
 
@@ -97,7 +96,7 @@ void read_house_data(char* filename, House houses[]){
   FILE *dataFile = fopen(filename, "r");
   if (dataFile == NULL) {
     printf("Failed to open file < %s >\n", filename);
-    printf("(At dataset.c, line 97)\n");
+    printf("(At dataset.c, line 96)\n");
     return;
   }
 
@@ -139,32 +138,35 @@ void read_house_data(char* filename, House houses[]){
 
       i++;
   }
-
   fclose(dataFile);
 }
 
-void print_house(House *house, int houseCount){
+void print_house(House *houses, int houseCount){
   // TODO
   for (size_t i = 0; i < houseCount; i++) {
     printf("House information: \n");
-    printf("\tID: %d\n", house[i].id);
-    printf("\tLot area: %d\n", house[i].lotarea);
-    printf("\tStreet: %s\n", house[i].street);
-    printf("\tSale price: %.lf\n", house[i].saleprice);
-    printf("\tNeighborhood: %s\n", house[i].neighborhood);
-    printf("\tBuilt in: %d\n", house[i].yearbuilt);
-    printf("\tOverall Quality: %d\n", house[i].overallqual);
-    printf("\tOverall Condition: %d\n", house[i].overallcond);
-    printf("\tKitchen Quality: %s\n", house[i].kitchenqual);
+    printf("\tID: %d\n", houses[i].id);
+    printf("\tLot area: %d\n", houses[i].lotarea);
+    printf("\tStreet: %s\n", houses[i].street);
+    printf("\tSale price: %.lf\n", houses[i].saleprice);
+    printf("\tNeighborhood: %s\n", houses[i].neighborhood);
+    printf("\tBuilt in: %d\n", houses[i].yearbuilt);
+    printf("\tOverall Quality: %d\n", houses[i].overallqual);
+    printf("\tOverall Condition: %d\n", houses[i].overallcond);
+    printf("\tKitchen Quality: %s\n", houses[i].kitchenqual);
   }
 }
 
-void get_house_byid(House *house, int houseCount){
+void get_house_byid(House *houses, int houseCount){
   int id = 0;
   printf("Get house with id: ");
   scanf("%d", &id);
-  // TODO
-    print_house_by_id(house, id);
+  if ((id < houses[0].id) || (id > houses[houseCount - 1].id)) {
+    printf("There is no house with this ID in the list\n");
+    printf("(ID range is: %d - %d)\n\n", houses[0].id, houses[houseCount - 1].id);
+    return;
+  }
+  print_house_by_id(houses, id);
 }
 
 void get_neighborhoods(House *houses, int houseCount){
@@ -173,6 +175,11 @@ void get_neighborhoods(House *houses, int houseCount){
   printf("Get neighborhoods of house with id\n");
   printf("Enter the house id of then neighborhood that you want to search: ");
   scanf("%d", &id);
+  if ((id < houses[0].id) || (id > houses[houseCount - 1].id)) {
+    printf("There is no house with this ID in the list\n");
+    printf("(ID range is: %d - %d)\n\n", houses[0].id, houses[houseCount - 1].id);
+    return;
+  }
   id -= 101;
 
   for (size_t i = 0; i < houseCount; i++) {
@@ -182,18 +189,18 @@ void get_neighborhoods(House *houses, int houseCount){
   }
 }
 
-void print_house_by_id(House *house, int id){
+void print_house_by_id(House *houses, int id){
   id -= 101;
   printf("\n\n");
-  printf("\tID: %d\n", house[id].id);
-  printf("\tLot area: %d\n", house[id].lotarea);
-  printf("\tStreet: %s\n", house[id].street);
-  printf("\tSale price: %.lf\n", house[id].saleprice);
-  printf("\tNeighborhood: %s\n", house[id].neighborhood);
-  printf("\tBuilt in: %d\n", house[id].yearbuilt);
-  printf("\tOverall Quality: %d\n", house[id].overallqual);
-  printf("\tOverall Condition: %d\n", house[id].overallcond);
-  printf("\tKitchen Quality: %s\n", house[id].kitchenqual);
+  printf("\tID: %d\n", houses[id].id);
+  printf("\tLot area: %d\n", houses[id].lotarea);
+  printf("\tStreet: %s\n", houses[id].street);
+  printf("\tSale price: %.lf\n", houses[id].saleprice);
+  printf("\tNeighborhood: %s\n", houses[id].neighborhood);
+  printf("\tBuilt in: %d\n", houses[id].yearbuilt);
+  printf("\tOverall Quality: %d\n", houses[id].overallqual);
+  printf("\tOverall Condition: %d\n", houses[id].overallcond);
+  printf("\tKitchen Quality: %s\n", houses[id].kitchenqual);
 }
 
 void mean_sale_prices(House* houses, int houseCount){
@@ -201,17 +208,16 @@ void mean_sale_prices(House* houses, int houseCount){
   double price;
   int minY = 3000, maxY = 0;
   int criters = 0;
-  // TODO
-    printf("\n\nCalculate house prices by your criter choice.\n");
-    printf("Your choices: \n");
-    printf("[1]Neighborhoods\n");
-    printf("[2]Kitchen Quality\n");
-    printf("[3]Overall Quality\n");
-    printf("[4]Overall Condition\n");
-    printf("[5]Lot Area\n");
-    printf("[6]Years\n");
-    printf("Enter your choice: ");
-    scanf("%d", &criters);
+  printf("\n\nCalculate house prices by your criter choice.\n");
+  printf("Your choices: \n");
+  printf("[1]Neighborhoods\n");
+  printf("[2]Kitchen Quality\n");
+  printf("[3]Overall Quality\n");
+  printf("[4]Overall Condition\n");
+  printf("[5]Lot Area\n");
+  printf("[6]Years\n");
+  printf("Enter your choice: ");
+  scanf("%d", &criters);
 
   //Initialisations
     //For neighbourhoods
@@ -220,26 +226,24 @@ void mean_sale_prices(House* houses, int houseCount){
       double* pricesN = malloc(sizeof(double));
       int lim = 0;
 
-      //Memory error checkif
-
+    //Memory error checkif
       if (listN == NULL){
-        printf("Failed to allocate memory for < listN > \n");
-        printf("(At dataset.c, line 218)");
+        printf("Failed to allocate memory for array < listN > \n");
+        printf("(At dataset.c, line 224)");
         return;
       }
 
       if (ctrN == NULL){
-        printf("Failed to allocate memory for < ctrN > \n");
-        printf("(At dataset.c, line 219)\n");
+        printf("Failed to allocate memory for array < ctrN > \n");
+        printf("(At dataset.c, line 225)\n");
         return;
       }
       
       if (pricesN == NULL){
-        printf("Failed to allocate memory for < pricesN > \n");
-        printf("(At dataset.c, line 220)\n");
+        printf("Failed to allocate memory for array < pricesN > \n");
+        printf("(At dataset.c, line 226)\n");
         return;
       }
-
 
     //For kitchenqual
       int kitQ[] = {0, 0, 0, 0, 0};
@@ -292,7 +296,7 @@ void mean_sale_prices(House* houses, int houseCount){
 
       printf("\nNeighborhoods:\tMean Prices:\n");
       for (int i = 0; i < lim; i++) {
-        printf("%s\t%.2lf\n", listN[i], pricesN[i] / ctrN[i]);
+        printf("%s\t\t%.2lf\n", listN[i], pricesN[i] / ctrN[i]);
       }
       printf("\n");
 
@@ -302,7 +306,6 @@ void mean_sale_prices(House* houses, int houseCount){
       break;
     
     case 2:
-
       for (size_t i = 0; i < houseCount; i++){
         if (strncmp("Ex", houses[i].kitchenqual, 1) == 0) {
           kitQua[0] = kitQua[0] + (double)houses[i].saleprice;
@@ -346,7 +349,6 @@ void mean_sale_prices(House* houses, int houseCount){
       break;
 
     case 3:
-
       for (size_t i = 0; i < houseCount; i++){
         if (0 <= houses[i].overallqual && houses[i].overallqual < 2) {
           overallQual[0] = overallQual[0] + houses[i].saleprice;
@@ -387,11 +389,10 @@ void mean_sale_prices(House* houses, int houseCount){
       printf("Average Price of 6-8 Overall Quality Houses:\t%6.0lf $\n", (overallQual[3]/(double)(counterOQ[3])));
       printf("Average Price of 8-10 Overall Quality Houses:\t%6.0lf $\n\n\n", (overallQual[4]/(double)(counterOQ[4])));
 
-    break;
+      break;
 
     case 4:
     //At 2 intervals
-
       for (size_t i = 0; i < houseCount; i++) {
         if (0 <= houses[i].overallcond && houses[i].overallcond < 2) {
           overallcond[0] = overallcond[0] + houses[i].saleprice;
@@ -432,7 +433,7 @@ void mean_sale_prices(House* houses, int houseCount){
       printf("Average Price of 6-8 Overall Condition Houses:\t%6.0lf $\n", (overallcond[3]/(double)(counterOC[3])));
       printf("Average Price of 8-10 Overall Condition Houses:\t%6.0lf $\n\n\n", (overallcond[4]/(double)(counterOC[4])));
 
-    break;
+      break;
 
     case 5:
       
@@ -494,7 +495,7 @@ void mean_sale_prices(House* houses, int houseCount){
       printf("Average price for the houses of lotarea between [%.0lf-%.0lf]:\t\t%6.0lf $\n", ((double)biggestLotArea-interval*6), ((double)biggestLotArea-interval*7), (lotArea[6]/counters[6]));
       printf("Average price for the houses of lotarea between [%.0lf-%.0lf]:\t\t%6.0lf $\n\n\n", ((double)biggestLotArea-interval*7), ((double)biggestLotArea-interval*8), (lotArea[7]/counters[7]));
     
-    break;
+      break;
 
     case 6:
       for (int i = 0; i < houseCount; i++) {
@@ -585,6 +586,12 @@ int find_biggest_lotarea(House* houses, int houseCount){
 }
 
 void print_topN(House* houses, int houseCount, int N) {
+  if (N > houseCount) {
+    printf("There are not that many houses in the list\n");
+    printf("Printing the full list instead...\n");
+    N = houseCount;
+  }
+
   int id;
   quick_sort_type(houses, houseCount, PRICE);
   for (int i = 1; i < N + 1; i++) {

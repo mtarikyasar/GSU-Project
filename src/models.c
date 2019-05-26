@@ -7,16 +7,14 @@
 #define MAT_COL 2
 
 double model_by_similarity(House* houses,House new_house, int houseCount){
-  //printf("Find price for house %d\n",new_house.id);
   double price = 0;
   int sizeArr = houseCount;
 
   // 1 - Oncelikle ayni komsuluktaki evleri bulun
-
   House *housesNeigh = malloc(sizeof(House));
   if (housesNeigh == NULL) {
     printf("Failed to allocate memory for struct array < housesNeigh >\n");
-    printf("(At models.c, line 16)\n");
+    printf("(At models.c, line 14)\n");
     return 0;
   }
   int ctr_C = 0;
@@ -30,18 +28,16 @@ double model_by_similarity(House* houses,House new_house, int houseCount){
   }
   
   // 2 - Bu evleri lotArea ya gore siralayin
-
   quick_sort_type(housesNeigh, ctr_C, AREA);
 
   // 3 - new_house degiskenin lotarea parametresine en
   //  yakin evleri alin, bu evlerin alanlari 
   //  (new_house.lotarea+2000) ve (new_house.lotarea-2000) metrekare arasinda
   //   olabilir.
-
   House *lotAreaClose = malloc(sizeof(House));
   if (lotAreaClose == NULL) {
     printf("Failed to allocate memory for struct array < lotAreaClose >\n");
-    printf("(At models.c, line 16)\n");
+    printf("(At models.c, line 37)\n");
     return 0;
   }
   sizeArr = ctr_C;
@@ -66,17 +62,15 @@ double model_by_similarity(House* houses,House new_house, int houseCount){
   }
 
   // 4 - Kalan evleri yillarina gore siralayin
-  
   quick_sort_type(lotAreaClose, ctr_C, YEAR);
 
   // 5 - new_house degiskenin yearbuilt parametresine en yakin
   // evleri secin, bu evlerin yapim tarihleri
   //  (new_house.yearbuilt+5) ve (new_house-5) arasinda olabilir.
-
   House *yearClose = malloc(sizeof(House));
   if (yearClose == NULL) {
     printf("Failed to allocate memory for struct array < yearClose >\n");
-    printf("(At models.c, line 76)\n");
+    printf("(At models.c, line 70)\n");
     return 0;
   }
   sizeArr = ctr_C;
@@ -103,7 +97,6 @@ double model_by_similarity(House* houses,House new_house, int houseCount){
   }
 
   // 6 - Ek olarak kaliteye gore secim yapabilirsiniz.
-
   sizeArr = ctr_C;
 
   if (ctr_C > 5) {
@@ -111,7 +104,7 @@ double model_by_similarity(House* houses,House new_house, int houseCount){
     House *overallClose = malloc(sizeof(House));
     if (overallClose == NULL) {
       printf("Failed to allocate memory for struct array < overallClose >\n");
-      printf("(At models.c, line 111)\n");
+      printf("(At models.c, line 104)\n");
       return 0;
     }
     double overallCheck;
@@ -154,7 +147,6 @@ double model_by_similarity(House* houses,House new_house, int houseCount){
   }
 
   // 7 - Son elemeden sonra elinizde kalan evlerin fiyat ortalamasini alin
-  
   for (int i = 0; i < sizeArr; i++) {
     price += yearClose[i].saleprice;
   }
@@ -168,15 +160,13 @@ double model_by_similarity(House* houses,House new_house, int houseCount){
   return price;
 }
 
-
-
-void create_data_matrices(House* houses, double** X, double* y, int size){
+void create_data_matrices(House* houses, double** X, double** y, int size){
   printf("Creating data matrices from dataset...\n");
 
   for(int i = 0; i < size; i++) {
     X[i][0] = 1;
     X[i][1] = houses[i].lotarea;
-    y[i] = houses[i].saleprice;
+    y[i][0] = houses[i].saleprice;
   }
   return;
 }
@@ -192,10 +182,9 @@ double** get_transpose(double** A, int size){
 
   if (Atranspose == NULL) {
     printf("Failed to allocate memory for matrix < Atranspose >\n");
-    printf("(At models.c, line 188-190)\n");
+    printf("(At models.c, line 177-180)\n");
     return 0;
   }
-  
 
   for (int i = 0; i < size; i++){
     Atranspose[0][i] = A[i][0];
@@ -217,7 +206,7 @@ double** get_inverse(double** A, int size) {
 
   if (Ainverse == NULL) {
     printf("Failed to allocate memory for matrix < Ainverse >\n");
-    printf("(At models.c, line 212-214)\n");
+    printf("(At models.c, line 201-204)\n");
     return 0;
   }
 
@@ -247,7 +236,7 @@ double** get_multiplication(double** A, double** B, int rowA, int colB, int colA
 
   if (C == NULL) {
     printf("Failed to allocate memory for matrix < C >\n");
-    printf("(At models.c, line 241-243)\n");
+    printf("(At models.c, line 232-234)\n");
     return 0;
   }
 
@@ -265,7 +254,7 @@ double** get_multiplication(double** A, double** B, int rowA, int colB, int colA
 }
 
 
-double** calculate_parameter(double** X, double* y, int size){
+double** calculate_parameter(double** X, double** y, int size){
   printf("Calculating parameters for dataset...\n");
 
   double** W;
@@ -273,20 +262,8 @@ double** calculate_parameter(double** X, double* y, int size){
   double** temp = get_multiplication(transX, X, MAT_COL, MAT_COL, size);
   double** temp2 = get_inverse(temp, size);
   temp = get_multiplication(temp2, transX, MAT_COL, size, MAT_COL);
-  
-  double** tempY = malloc(size * sizeof(double *));
-  for (int i = 0; i < size; i++) {
-    tempY[i] = malloc(sizeof(double));
-    tempY[i][0] = y[i];
-  }
 
-  if (tempY == NULL) {
-    printf("Failed to allocate memory for matrix < tempY >\n");
-    printf("(At models.c, line 274-276)\n");
-    return 0;
-  }
-
-  W = get_multiplication(temp, tempY, MAT_COL, MAT_COL, size);
+  W = get_multiplication(temp, y, MAT_COL, MAT_COL, size);
 
   return W;
 }
@@ -297,30 +274,31 @@ void make_prediction(char* filename, double** W, int listSize){
   // 1 - filename olarak verilen test verisini oku,
   //   yeni houses dizisi olustur
   House* houseList = malloc(sizeof(House)*listSize); 
-  read_house_testData(filename, houseList);
-
   if (houseList == NULL) {
     printf("Failed to allocate memory for struct array < houseList >\n");
-    printf("(At models.c, line 295)\n");
+    printf("(At models.c, line 276)\n");
     return;
   }
 
+  read_house_testData(filename, houseList);
+
   // 2 - create_data_matrices kullanarak X ve y matrislerini olustur
+  double** y = malloc(listSize * sizeof(double*));
   double** X = malloc(listSize * sizeof(double*));
-  double* y = malloc(listSize * sizeof(double));
   for (int i = 0; i < listSize; i++) {
+    y[i] = malloc(sizeof(double));
     X[i] = malloc(2 * sizeof(double));
   }
 
   if (X == NULL) {
     printf("Failed to allocate memory for matrix < X >\n");
-    printf("(At models.c, line 309-312)\n");
+    printf("(At models.c, line 287-290)\n");
     return;
   }
 
   if (y == NULL) {
     printf("Failed to allocate memory for matrix < y >\n");
-    printf("(At models.c, line 310)\n");
+    printf("(At models.c, line 286-289)\n");
     return;
   }
 
@@ -329,33 +307,27 @@ void make_prediction(char* filename, double** W, int listSize){
   // 3 - Daha onceden hesaplanan W parametresini kullanarak
   //  fiyat tahmini yap, burda yapilmasi gereken
   //  X ve W matrislerinin carpimini bulmak
-
-  double** matRes = malloc(listSize * sizeof(double *));
-  for (int i = 0; i < listSize; i++) {
-    matRes[i] = malloc(sizeof(double));
-  }
-
-  if (y == NULL) {
-    printf("Failed to allocate memory for matrix < matRes >\n");
-    printf("(At models.c, line 333-335)\n");
-    return;
-  }
-
-  matRes = get_multiplication(X, W, listSize, 1, MAT_COL);
+  y = get_multiplication(X, W, listSize, 1, MAT_COL);
 
   // 4 - Sonuclari bir dosyaya yaz
   FILE* fprice = fopen("predicted_prices.txt", "w");
+  if (fprice == NULL) {
+    printf("Failed to create file < predicted_prices.txt >\n");
+    printf("(At models.c, line 313)\n");
+    return;
+  }
 
   fprintf(fprice, "ID\tSalePrice\n");
   for (int i = 0; i < listSize; i++) {
-    fprintf(fprice, "%d\t%.2lf\n", houseList[i].id, matRes[i][0]);
+    fprintf(fprice, "%d\t%.2lf\n", houseList[i].id, y[i][0]);
   }
 
   fclose(fprice);
-  printf("Prediction completed! Predicted prices are saved to predicred_prices.txt file\n\n");
+  printf("Prediction completed! Predicted prices are saved to predicted_prices.txt file\n\n");
 
   for (int i = 0; i < listSize; i++) {
     free(X[i]);
+    free(y[i]);
   }
   free(y); y = NULL;
   free(X); X = NULL;

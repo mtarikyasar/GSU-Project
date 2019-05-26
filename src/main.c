@@ -157,30 +157,33 @@ int main(int argc,char * argv[]){
       }
                 
       case 7: {
+        //Karsilastirma yontemi
         FILE* fsim = fopen("prices_by_similarity.txt", "w");
         if (fsim == NULL) {
           printf("Failed to create file < prices_by_similarity >\n");
-          printf("(At main.c, line 160)\n");
+          printf("(At main.c, line 161)\n");
           break;
         }
 
-        fprintf(fsim, "ID: \t Price:\n");
+        fprintf(fsim, "ID\tSalePrice\n");
         printf("Karsilastirma yontemiyle fiyat tahmini yapiliyor...\n");
         for (int i = 0; i < houseCountTest; i++) {
           housesTest[i].saleprice = model_by_similarity(houses, housesTest[i], houseCount);
-          fprintf(fsim, "%d \t %.2lf\n", housesTest[i].id, housesTest[i].saleprice);
+          fprintf(fsim, "%d\t%.2lf\n", housesTest[i].id, housesTest[i].saleprice);
         }
         fclose(fsim);
         printf("Islem tamamlandi! Fiyat tahminleri prices_by_similarity.txt dosyasina kaydedildi.\n\n");
         
+        //Dogrusal iliski yontemi
         double** X = malloc(houseCount * sizeof(double*));
-        double* y = malloc(houseCount * sizeof(double));
+        double** y = malloc(houseCount * sizeof(double*));
         for (int i = 0; i < houseCount; i++) {
           X[i] = malloc(2 * sizeof(double));
+          y[i] = malloc(sizeof(double));
         }
         if ((X == NULL) || (y == NULL)) {
           printf("Failed to allocate memory for matrices < X > and < y >\n");
-          printf("(At main.c, line 176)\n");
+          printf("(At main.c, line 178-182)\n");
           break;
         }        
 
@@ -190,6 +193,7 @@ int main(int argc,char * argv[]){
         
         for (int i = 0; i < houseCount; i++) {
           free(X[i]);
+          free(y[i]);
         }
         free(X); free(y);
         y = NULL; X = NULL;
@@ -207,6 +211,5 @@ int main(int argc,char * argv[]){
       houses[i] = housesSave[i];
     }
   }
-
   return 0;
 }
