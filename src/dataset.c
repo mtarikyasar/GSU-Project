@@ -608,4 +608,3 @@ void print_topN(House* houses, int houseCount, int N) {
     print_house_by_id(houses, id);
   }
 }
-

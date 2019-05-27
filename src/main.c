@@ -44,17 +44,17 @@ int main(int argc,char * argv[]){
   }
 
   while(cevap != 0){
-    printf("Emlak Programina Hos geldiniz!\n");
-    printf("Yapmak istediginiz islemi seciniz\n");
-    printf("1 - Evleri listele\n");
-    printf("2 - ID degeri verilen evi goster\n");
-    printf("3 - ID degeri verilen evin komsu evlerini bul \n");
-    printf("4 - Semtlere gore satis fiyati ortalamalarini goster\n");
-    printf("5 - En yuksek fiyata sahip ilk N evi goster\n");
-    printf("6 - Sirali ev listesini kaydet\n");
-    printf("7 - Fiyat tahmini yap\n");
-    printf("Programdan cikmak icin 0 a basiniz.\n");
-    printf("Cevabiniz: ");
+    printf("Welcome to the Property Program!\n");
+    printf("Select the operation you want to do: \n");
+    printf("1 - List all houses\n");
+    printf("2 - Show ID given house\n");
+    printf("3 - Find the neighbors of ID given house \n");
+    printf("4 - Show average prices according to criters\n");
+    printf("5 - Show the most expensive N houses\n");
+    printf("6 - Save sorted house list\n");
+    printf("7 - Make price estimation\n");
+    printf("Enter 0 to quit the program\n");
+    printf("Your answer: ");
     scanf("%d",&cevap);
     
     switch (cevap) {
