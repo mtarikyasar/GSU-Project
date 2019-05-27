@@ -508,41 +508,50 @@ void mean_sale_prices(House* houses, int houseCount){
       }
 
       int yearSize = maxY - minY + 1;
-      hYear *yearTable = malloc(yearSize*sizeof(hYear));
-      if (yearTable == NULL) {
-        printf("Failed to allocate memory for < yearTable >\n");
+      hYear *yearList = malloc(yearSize*sizeof(hYear));
+      if (yearList == NULL) {
+        printf("Failed to allocate memory for < yearList >\n");
         printf("(At dataset.c, line 510)\n");
       }
       for (int i = 0; i < yearSize; i++) {
-        yearTable[i].year = minY + i;
-        yearTable[i].counter = 0;
-        yearTable[i].price = 0;
+        yearList[i].year = minY + i;
+        yearList[i].counter = 0;
       }
 
       quick_sort_type(houses, houseCount, YEAR);
 
       for (int i = 0, j = 0; i < yearSize; i++) {
-        yearTable[i].mean_price = 0;
-        while ((yearTable[i].year == houses[j].yearbuilt) && (j < houseCount)) {
-          yearTable[i].mean_price += houses[j].saleprice;
-          yearTable[i].counter++; 
+        yearList[i].mean_price = 0;
+        while ((yearList[i].year == houses[j].yearbuilt) && (j < houseCount)) {
+          yearList[i].mean_price += houses[j].saleprice;
+          yearList[i].counter++; 
           j++;
         }
-        yearTable[i].mean_price /= yearTable[i].counter;
+        yearList[i].mean_price /= yearList[i].counter;
       }
 
       printf("\nEnter a year to find the mean price (%d - %d): ", minY, maxY);
       scanf("%d", &yearAnswer);
+      if ((yearAnswer < minY) || (yearAnswer > maxY)) {
+        printf("Please enter a year between %d and %d\n\n", minY, maxY);
+        break;
+      }
       yearAnswer = yearSize - (maxY - yearAnswer) - 1;
-      if (yearTable[yearAnswer].counter != 0) {
-        printf("There are %d houses built in %d\n", yearTable[yearAnswer].counter, yearTable[yearAnswer].year);
-        printf("Mean price is %.2lf\n\n", yearTable[yearAnswer].mean_price);
+      if (yearList[yearAnswer].counter != 0) {
+        if (yearList[yearAnswer].counter == 1) {
+          printf("There is only %d house built in %d\n", yearList[yearAnswer].counter, yearList[yearAnswer].year);
+          printf("Mean price is %.2lf\n\n", yearList[yearAnswer].mean_price);
+        }
+        else {
+          printf("There are %d houses built in %d\n", yearList[yearAnswer].counter, yearList[yearAnswer].year);
+          printf("Mean price is %.2lf\n\n", yearList[yearAnswer].mean_price);
+        }
       }
       else {
         printf("There are no houses built in that year\n\n");
       }
 
-      free(yearTable); yearTable = NULL;
+      free(yearList); yearList = NULL;
       break;
 
     default:

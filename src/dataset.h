@@ -26,10 +26,8 @@ typedef struct house{
 
 typedef struct houseYear {
   int year;
-  double price;
   int counter;
   double mean_price;
-  struct houseYear *next;
 } hYear;
 
 void read_house_testData(char* filename, House houses[]);
