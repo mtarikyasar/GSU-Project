@@ -11,9 +11,12 @@ Files and folders are arranged as:
 ----- Data Set -----
 
 The data set that will be used in the project is a home sales data set.
+
   data/ directory contains two .csv files.
+	
   data/data_train.csv file contains set of informations about a house in each line.
     The first line of file is the header line. Shows which row represents which information.
+		
   data/data_test.csv file contains informations of a house but prices are deleted.
   
 Functions about data set can be found at src/
