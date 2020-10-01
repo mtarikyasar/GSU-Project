@@ -1,5 +1,7 @@
 This repo contains INF103 Algorithm and Advanced Programming course (2018-2019) project.
+
 The project has been written in cooperation with [Inan Ozer](https://https://github.com/sdinanozer).
+
 Files and folders are arranged as:
 
   - src/  : contains source code
